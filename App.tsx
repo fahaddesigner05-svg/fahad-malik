@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Hero from './components/Hero';
 import About from './components/About';
 import Projects from './components/Projects';
@@ -9,8 +10,10 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CustomCursor from './components/CustomCursor';
 import TextDivider from './components/TextDivider';
+import Login from './components/Admin/Login';
+import Dashboard from './components/Admin/Dashboard';
 
-const App: React.FC = () => {
+const MainSite: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
@@ -34,7 +37,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0c10] text-white bg-cyber selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[#0b0c10] text-white bg-cyber selection:bg-cyan-500 selection:text-white cursor-none">
       <CustomCursor />
       <Navbar activeSection={activeSection} />
       
@@ -47,7 +50,6 @@ const App: React.FC = () => {
           <About />
         </section>
 
-        {/* New Animated Text Divider between About and Projects */}
         <TextDivider />
         
         <section id="projects" className="py-20">
@@ -65,6 +67,18 @@ const App: React.FC = () => {
 
       <Footer />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<MainSite />} />
+      <Route path="/admin/login" element={<Login />} />
+      <Route path="/admin/dashboard" element={<Dashboard />} />
+      {/* Redirect any other admin routes to login or dashboard */}
+      <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+    </Routes>
   );
 };
 

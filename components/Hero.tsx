@@ -14,7 +14,7 @@ const Hero: React.FC = () => {
         <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
           <div>
             <h2 className="text-2xl font-light text-gray-300 mb-2">Hi, I'm</h2>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6">
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6 whitespace-nowrap">
               <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent neon-text-blue">
                 Fahad Malik
               </span>
