@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { 
@@ -19,13 +19,31 @@ import {
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(true);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAdminAuthenticated');
     if (!isAuthenticated) {
       navigate('/admin/login');
+    } else {
+      fetchMessages();
     }
   }, [navigate]);
+
+  const fetchMessages = async () => {
+    try {
+      const response = await fetch('/api/messages');
+      const result = await response.json();
+      if (result.success) {
+        setMessages(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('isAdminAuthenticated');
@@ -35,14 +53,8 @@ const Dashboard: React.FC = () => {
   const stats = [
     { label: 'Total Views', value: '12,450', icon: Eye, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
     { label: 'Project Clicks', value: '842', icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-400/10' },
-    { label: 'Inquiries', value: '24', icon: MessageSquare, color: 'text-pink-400', bg: 'bg-pink-400/10' },
+    { label: 'Inquiries', value: messages.length.toString(), icon: MessageSquare, color: 'text-pink-400', bg: 'bg-pink-400/10' },
     { label: 'Active Projects', value: '12', icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  ];
-
-  const recentProjects = [
-    { id: 1, name: 'Cyberpunk E-commerce', category: 'UI/UX Design', status: 'Published' },
-    { id: 2, name: 'Neon Brand Identity', category: 'Graphic Design', status: 'Draft' },
-    { id: 3, name: 'Futuristic Mobile App', category: 'Mobile UI', status: 'Published' },
   ];
 
   return (
@@ -125,7 +137,7 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
 
-          {/* Projects Table */}
+          {/* Messages Table */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -133,43 +145,56 @@ const Dashboard: React.FC = () => {
             className="glass-panel rounded-3xl border border-white/5 overflow-hidden"
           >
             <div className="p-6 border-b border-white/5 flex items-center justify-between">
-              <h2 className="text-xl font-bold">Recent Projects</h2>
-              <button className="text-cyan-400 text-sm font-bold hover:underline">View All</button>
+              <h2 className="text-xl font-bold">Recent Messages</h2>
+              <button 
+                onClick={fetchMessages}
+                className="text-cyan-400 text-sm font-bold hover:underline flex items-center space-x-2"
+              >
+                <span>Refresh</span>
+              </button>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
                   <tr className="bg-white/5 text-gray-400 text-xs uppercase tracking-widest">
-                    <th className="px-6 py-4">Project Name</th>
-                    <th className="px-6 py-4">Category</th>
-                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Name</th>
+                    <th className="px-6 py-4">Email</th>
+                    <th className="px-6 py-4">Message</th>
+                    <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {recentProjects.map((project) => (
-                    <tr key={project.id} className="hover:bg-white/5 transition-colors group">
-                      <td className="px-6 py-4 font-medium">{project.name}</td>
-                      <td className="px-6 py-4 text-gray-400">{project.category}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                          project.status === 'Published' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-yellow-500/10 text-yellow-400'
-                        }`}>
-                          {project.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-2 rounded-lg hover:bg-cyan-400/10 text-cyan-400 transition-all">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button className="p-2 rounded-lg hover:bg-red-400/10 text-red-400 transition-all">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
+                  {loadingMessages ? (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">Loading messages...</td>
                     </tr>
-                  ))}
+                  ) : messages.length > 0 ? (
+                    messages.map((msg) => (
+                      <tr key={msg._id} className="hover:bg-white/5 transition-colors group">
+                        <td className="px-6 py-4 font-medium">{msg.name}</td>
+                        <td className="px-6 py-4 text-gray-400">{msg.email}</td>
+                        <td className="px-6 py-4 text-gray-400 max-w-xs truncate">{msg.message}</td>
+                        <td className="px-6 py-4 text-gray-500 text-xs">
+                          {new Date(msg.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button className="p-2 rounded-lg hover:bg-cyan-400/10 text-cyan-400 transition-all">
+                              <MessageSquare className="w-4 h-4" />
+                            </button>
+                            <button className="p-2 rounded-lg hover:bg-red-400/10 text-red-400 transition-all">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">No messages found.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
