@@ -20,6 +20,7 @@ async function startServer() {
       const projects = await Project.find({}).sort({ createdAt: -1 });
       res.status(200).json({ success: true, data: projects });
     } catch (error: any) {
+      console.error('API Error:', error);
       res.status(400).json({ success: false, error: error.message });
     }
   });
@@ -37,6 +38,7 @@ async function startServer() {
       const newMessage = await Message.create({ name, email, message });
       res.status(201).json({ success: true, data: newMessage });
     } catch (error: any) {
+      console.error('API Error:', error);
       res.status(400).json({ success: false, error: error.message });
     }
   });
@@ -48,6 +50,7 @@ async function startServer() {
       const messages = await Message.find({}).sort({ createdAt: -1 });
       res.status(200).json({ success: true, data: messages });
     } catch (error: any) {
+      console.error('API Error:', error);
       res.status(400).json({ success: false, error: error.message });
     }
   });

@@ -14,13 +14,19 @@ import {
   Plus,
   Edit,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Database,
+  AlertTriangle,
+  CheckCircle2
 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [messages, setMessages] = useState<any[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(false);
+  const [seedStatus, setSeedStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [dbStatus, setDbStatus] = useState<{ connected: boolean; error?: string }>({ connected: true });
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('isAdminAuthenticated');
@@ -28,15 +34,63 @@ const Dashboard: React.FC = () => {
       navigate('/admin/login');
     } else {
       fetchMessages();
+      checkDbStatus();
     }
   }, [navigate]);
+
+  const checkDbStatus = async () => {
+    try {
+      const response = await fetch('/api/projects');
+      const result = await response.json();
+      if (!result.success && result.error?.includes('MONGODB_URI')) {
+        setDbStatus({ connected: false, error: 'MongoDB URI is missing. Please set it in .env.example' });
+      } else if (!result.success) {
+        setDbStatus({ connected: false, error: result.error });
+      } else {
+        setDbStatus({ connected: true });
+      }
+    } catch (error: any) {
+      setDbStatus({ connected: false, error: error.message });
+    }
+  };
+
+  const handleSeedData = async () => {
+    if (!confirm('This will clear all existing projects and add sample data. Continue?')) return;
+    
+    setIsSeeding(true);
+    setSeedStatus('loading');
+    try {
+      const response = await fetch('/api/projects/seed', { method: 'POST' });
+      const result = await response.json();
+      if (result.success) {
+        setSeedStatus('success');
+        setTimeout(() => setSeedStatus('idle'), 3000);
+        alert('Sample projects seeded successfully!');
+      } else {
+        throw new Error(result.error || 'Failed to seed data');
+      }
+    } catch (error: any) {
+      console.error('Seed Error:', error);
+      setSeedStatus('error');
+      alert(`Error: ${error.message}`);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   const fetchMessages = async () => {
     try {
       const response = await fetch('/api/messages');
-      const result = await response.json();
-      if (result.success) {
-        setMessages(result.data);
+      const contentType = response.headers.get("content-type");
+      
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const result = await response.json();
+        if (result.success) {
+          setMessages(result.data);
+        }
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -113,6 +167,21 @@ const Dashboard: React.FC = () => {
         </header>
 
         <div className="p-8 space-y-8">
+          {/* DB Status Warning */}
+          {!dbStatus.connected && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center space-x-4 text-red-400"
+            >
+              <AlertTriangle className="w-6 h-6 flex-shrink-0" />
+              <div>
+                <p className="font-bold">Database Connection Error</p>
+                <p className="text-sm opacity-80">{dbStatus.error}</p>
+              </div>
+            </motion.div>
+          )}
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, idx) => (
@@ -241,14 +310,24 @@ const Dashboard: React.FC = () => {
                   </div>
                   <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-all" />
                 </button>
-                <button className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group">
+                <button 
+                  onClick={handleSeedData}
+                  disabled={isSeeding}
+                  className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition-all group disabled:opacity-50"
+                >
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-purple-400/10 text-purple-400">
-                      <Users className="w-4 h-4" />
+                    <div className="p-2 rounded-lg bg-emerald-400/10 text-emerald-400">
+                      <Database className="w-4 h-4" />
                     </div>
-                    <span className="font-medium">User Feedback</span>
+                    <span className="font-medium">Seed Sample Data</span>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-all" />
+                  {seedStatus === 'loading' ? (
+                    <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                  ) : seedStatus === 'success' ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-white transition-all" />
+                  )}
                 </button>
               </div>
             </motion.div>

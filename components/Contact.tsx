@@ -18,15 +18,22 @@ const Contact: React.FC = () => {
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
-
-      if (result.success) {
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const result = await response.json();
+        if (result.success) {
+          setStatus('success');
+          setFormData({ name: '', email: '', message: '' });
+        } else {
+          throw new Error(result.error || 'Something went wrong');
+        }
       } else {
-        throw new Error(result.error || 'Something went wrong');
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Server returned an invalid response. Please check your Vercel deployment logs.");
       }
     } catch (err: any) {
+      console.error('Submit Error:', err);
       setStatus('error');
       setErrorMessage(err.message);
     }

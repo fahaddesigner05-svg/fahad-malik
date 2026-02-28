@@ -20,12 +20,19 @@ const Projects: React.FC = () => {
     const fetchProjects = async () => {
       try {
         const response = await fetch('/api/projects');
-        const result = await response.json();
+        const contentType = response.headers.get("content-type");
         
-        if (result.success) {
-          setProjects(result.data);
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const result = await response.json();
+          if (result.success) {
+            setProjects(result.data);
+          } else {
+            throw new Error(result.error || 'Failed to fetch projects');
+          }
         } else {
-          throw new Error(result.error || 'Failed to fetch projects');
+          const text = await response.text();
+          console.error("Non-JSON response:", text);
+          throw new Error("Invalid server response. Check Vercel logs.");
         }
       } catch (err: any) {
         console.error('Error fetching projects:', err);
@@ -101,7 +108,8 @@ const Projects: React.FC = () => {
           ))
         ) : (
           <div className="col-span-2 text-center py-20 text-gray-500">
-            No projects found. Add some to your database!
+            <p className="mb-4 italic">No projects found. Add some to your database!</p>
+            <p className="text-xs opacity-60">Tip: You can seed sample data from the Admin Dashboard.</p>
           </div>
         )}
       </div>
