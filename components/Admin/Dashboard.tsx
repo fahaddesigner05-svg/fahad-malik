@@ -25,6 +25,7 @@ const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'messages' | 'settings'>('dashboard');
   const [messages, setMessages] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState({ views: 0, clicks: 0 });
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [isSeeding, setIsSeeding] = useState(false);
@@ -50,9 +51,22 @@ const Dashboard: React.FC = () => {
     } else {
       fetchMessages();
       fetchProjects();
+      fetchAnalytics();
       checkDbStatus();
     }
   }, [navigate]);
+
+  const fetchAnalytics = async () => {
+    try {
+      const response = await fetch('/api/analytics');
+      const result = await response.json();
+      if (result.success) {
+        setAnalytics(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    }
+  };
 
   const checkDbStatus = async () => {
     try {
@@ -213,8 +227,8 @@ const Dashboard: React.FC = () => {
   };
 
   const stats = [
-    { label: 'Total Views', value: '12,450', icon: Eye, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
-    { label: 'Project Clicks', value: '842', icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+    { label: 'Total Views', value: analytics.views.toLocaleString(), icon: Eye, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
+    { label: 'Project Clicks', value: analytics.clicks.toLocaleString(), icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-400/10' },
     { label: 'Inquiries', value: messages.length.toString(), icon: MessageSquare, color: 'text-pink-400', bg: 'bg-pink-400/10' },
     { label: 'Active Projects', value: projects.length.toString(), icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
   ];
@@ -312,7 +326,7 @@ const Dashboard: React.FC = () => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Overview</h2>
                 <button 
-                  onClick={() => { fetchMessages(); fetchProjects(); checkDbStatus(); }}
+                  onClick={() => { fetchMessages(); fetchProjects(); fetchAnalytics(); checkDbStatus(); }}
                   className="text-cyan-400 text-sm font-bold hover:underline flex items-center space-x-1"
                 >
                   <TrendingUp className="w-4 h-4" />

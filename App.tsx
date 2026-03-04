@@ -17,6 +17,13 @@ const MainSite: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
+    // Increment view count
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'views' }),
+    }).catch(err => console.error('Analytics error:', err));
+
     const handleScroll = () => {
       const sections = ['home', 'about', 'projects', 'skills', 'contact'];
       const scrollPosition = window.scrollY + 100;

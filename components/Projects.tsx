@@ -45,6 +45,19 @@ const Projects: React.FC = () => {
     fetchProjects();
   }, []);
 
+  const handleProjectClick = (demoLink?: string) => {
+    // Increment click count
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'clicks' }),
+    }).catch(err => console.error('Analytics error:', err));
+
+    if (demoLink) {
+      window.open(demoLink, '_blank');
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-6 py-20 flex justify-center items-center">
@@ -83,7 +96,11 @@ const Projects: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {projects.length > 0 ? (
           projects.map((project, idx) => (
-            <div key={project._id} className="group relative overflow-hidden rounded-3xl cursor-pointer">
+            <div 
+              key={project._id} 
+              onClick={() => handleProjectClick(project.demoLink)}
+              className="group relative overflow-hidden rounded-3xl cursor-pointer"
+            >
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10 opacity-60 group-hover:opacity-80 transition-opacity"></div>
               <img 
                 src={project.img} 
