@@ -53,17 +53,20 @@ const Contact: React.FC = () => {
           
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
-               <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
+               <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex-shrink-0 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
                   <i className="fas fa-envelope"></i>
                </div>
-               <div>
+               <div className="min-w-0">
                   <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">Email Me</p>
-                  <a href="mailto:fahaddesigner05@gmail.com" className="font-semibold text-white hover:text-cyan-400 transition-colors">fahaddesigner05@gmail.com</a>
+                  <a href="mailto:fahaddesigner05@gmail.com" className="font-semibold text-white hover:text-cyan-400 transition-colors text-sm lg:text-base leading-tight">
+                    <span className="block lg:inline">fahaddesigner05</span>
+                    <span className="block lg:inline">@gmail.com</span>
+                  </a>
                </div>
             </div>
             
             <div className="flex items-center space-x-4">
-               <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 border border-purple-500/20">
+               <div className="w-10 h-10 rounded-full bg-purple-500/10 flex-shrink-0 flex items-center justify-center text-purple-400 border border-purple-500/20">
                   <i className="fas fa-phone"></i>
                </div>
                <div>
