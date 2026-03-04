@@ -2,6 +2,13 @@
 import React from 'react';
 
 const Hero: React.FC = () => {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="relative min-h-screen flex items-center px-6 lg:px-24 overflow-hidden pt-16">
       {/* Background Ambience */}
@@ -25,10 +32,16 @@ const Hero: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap gap-4">
-            <button className="px-8 py-4 bg-cyan-600/20 border border-cyan-400 rounded-lg text-cyan-400 font-bold hover:bg-cyan-400 hover:text-black transition-all duration-300 neon-border-blue transform hover:scale-105">
+            <button 
+              onClick={() => scrollToSection('projects')}
+              className="px-8 py-4 bg-cyan-600/20 border border-cyan-400 rounded-lg text-cyan-400 font-bold hover:bg-cyan-400 hover:text-black transition-all duration-300 neon-border-blue transform hover:scale-105"
+            >
               View My Work
             </button>
-            <button className="px-8 py-4 bg-purple-600/20 border border-purple-400 rounded-lg text-purple-400 font-bold hover:bg-purple-400 hover:text-white transition-all duration-300 neon-border-purple transform hover:scale-105">
+            <button 
+              onClick={() => scrollToSection('contact')}
+              className="px-8 py-4 bg-purple-600/20 border border-purple-400 rounded-lg text-purple-400 font-bold hover:bg-purple-400 hover:text-white transition-all duration-300 neon-border-purple transform hover:scale-105"
+            >
               Contact Me
             </button>
           </div>
