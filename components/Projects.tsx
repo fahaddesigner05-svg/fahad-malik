@@ -141,16 +141,20 @@ const Projects: React.FC = () => {
                 <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 bg-cyan-900/40 px-3 py-1 rounded-full mb-3 inline-block">
                   {project.category}
                 </span>
-                <h4 className="text-3xl font-bold text-white mb-4">{project.title}</h4>
+                <h4 className="text-3xl font-bold text-white mb-2">{project.title}</h4>
                 <button 
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/project/${project._id}`);
                   }}
-                  className="flex items-center space-x-2 text-white/60 group-hover:text-white transition-colors"
+                  className="mt-4 flex items-center space-x-3 group/btn"
                 >
-                  <span className="font-semibold">Case Study</span>
-                  <i className="fas fa-external-link-alt text-xs"></i>
+                  <div className="px-6 py-2.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm group-hover/btn:border-cyan-400 group-hover/btn:bg-cyan-400/10 transition-all duration-300 flex items-center space-x-3">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 group-hover/btn:text-white transition-colors">Case Study</span>
+                    <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover/btn:bg-cyan-400 group-hover/btn:text-black transition-all duration-300">
+                      <i className="fas fa-arrow-right text-[10px] group-hover/btn:translate-x-0.5 transition-transform"></i>
+                    </div>
+                  </div>
                 </button>
               </div>
 
