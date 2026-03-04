@@ -5,7 +5,7 @@ export interface IProject extends mongoose.Document {
   description: string;
   category: string;
   img: string;
-  demoLink: string;
+  videoLink: string;
   color: string;
 }
 
@@ -27,7 +27,7 @@ const ProjectSchema = new mongoose.Schema<IProject>({
     type: String,
     required: [true, 'Please provide an image URL for this project.'],
   },
-  demoLink: {
+  videoLink: {
     type: String,
   },
   color: {

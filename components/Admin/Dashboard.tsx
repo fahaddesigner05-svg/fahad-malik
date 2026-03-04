@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
     category: '',
     description: '',
     img: '',
-    demoLink: '',
+    videoLink: '',
     color: 'cyan'
   });
 
@@ -180,7 +180,7 @@ const Dashboard: React.FC = () => {
         category: project.category,
         description: project.description,
         img: project.img,
-        demoLink: project.demoLink || '',
+        videoLink: project.videoLink || '',
         color: project.color || 'cyan'
       });
     } else {
@@ -190,7 +190,7 @@ const Dashboard: React.FC = () => {
         category: '',
         description: '',
         img: '',
-        demoLink: '',
+        videoLink: '',
         color: 'cyan'
       });
     }
@@ -642,11 +642,11 @@ const Dashboard: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Demo Link (Optional)</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Video Link (Optional)</label>
                   <input 
                     type="url" 
-                    value={formData.demoLink}
-                    onChange={(e) => setFormData({...formData, demoLink: e.target.value})}
+                    value={formData.videoLink}
+                    onChange={(e) => setFormData({...formData, videoLink: e.target.value})}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-cyan-400 outline-none transition-all"
                   />
                 </div>

@@ -15,6 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         category: "Identity Design",
         description: "A high-end branding project for a tech startup.",
         img: "https://picsum.photos/seed/qnt/800/600",
+        videoLink: "https://www.w3schools.com/html/mov_bbb.mp4",
         color: "cyan"
       },
       {
@@ -22,6 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         category: "Mobile Design",
         description: "A comprehensive UI kit for mobile applications.",
         img: "https://picsum.photos/seed/neb/800/600",
+        videoLink: "",
         color: "purple"
       },
       {
@@ -29,6 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         category: "Web Application",
         description: "A sleek dashboard for a data analytics platform.",
         img: "https://picsum.photos/seed/eth/800/600",
+        videoLink: "https://www.w3schools.com/html/movie.mp4",
         color: "pink"
       },
       {
@@ -36,6 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         category: "Illustration",
         description: "A futuristic illustration inspired by Cyberpunk 2077.",
         img: "https://picsum.photos/seed/cyb/800/600",
+        videoLink: "",
         color: "blue"
       }
     ];
