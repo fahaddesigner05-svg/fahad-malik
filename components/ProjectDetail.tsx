@@ -209,7 +209,7 @@ const ProjectDetail: React.FC = () => {
             {project.videoLink && (project.videoLink.includes('youtube.com/watch?v=') || project.videoLink.includes('youtu.be/')) ? (
               <iframe 
                 src={`https://www.youtube.com/embed/${project.videoLink.includes('v=') ? project.videoLink.split('v=')[1].split('&')[0] : project.videoLink.split('/').pop()}`}
-                className="w-full h-full aspect-video"
+                className="w-full h-full aspect-video cursor-none"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -217,7 +217,7 @@ const ProjectDetail: React.FC = () => {
             ) : project.videoLink && project.videoLink.match(/\.(mp4|webm|ogg)$/i) ? (
               <video 
                 src={project.videoLink} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover cursor-none"
                 autoPlay
                 muted
                 loop

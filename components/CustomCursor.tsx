@@ -57,7 +57,7 @@ const CustomCursor: React.FC = () => {
       {/* The Standard Arrow Shape in Neon Purple (Size reduced) */}
       <div 
         className="custom-pointer"
-        style={{ left: `${position.x}px`, top: `${position.y}px` }}
+        style={{ left: `${position.x}px`, top: `${position.y}px`, zIndex: 2147483647 }}
       >
         <svg 
           width="18" 
@@ -84,7 +84,8 @@ const CustomCursor: React.FC = () => {
         style={{ 
           left: `${ringPosition.x}px`, 
           top: `${ringPosition.y}px`,
-          borderWidth: '2.5px' 
+          borderWidth: '2.5px',
+          zIndex: 2147483646
         }}
       />
     </div>
