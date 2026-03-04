@@ -31,6 +31,8 @@ const Dashboard: React.FC = () => {
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedStatus, setSeedStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [dbStatus, setDbStatus] = useState<{ connected: boolean; error?: string }>({ connected: true });
+  const [adminData, setAdminData] = useState({ username: '', password: '' });
+  const [isSavingAdmin, setIsSavingAdmin] = useState(false);
   
   // Project Form State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,9 +54,44 @@ const Dashboard: React.FC = () => {
       fetchMessages();
       fetchProjects();
       fetchAnalytics();
+      fetchAdminData();
       checkDbStatus();
     }
   }, [navigate]);
+
+  const fetchAdminData = async () => {
+    try {
+      const response = await fetch('/api/admin');
+      const result = await response.json();
+      if (result.success) {
+        setAdminData(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+    }
+  };
+
+  const handleUpdateAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingAdmin(true);
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminData)
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Admin credentials updated successfully!');
+      } else {
+        alert(result.error || 'Failed to update admin credentials');
+      }
+    } catch (error) {
+      console.error('Error updating admin data:', error);
+    } finally {
+      setIsSavingAdmin(false);
+    }
+  };
 
   const fetchAnalytics = async () => {
     try {
@@ -568,17 +605,35 @@ const Dashboard: React.FC = () => {
                   <Settings className="w-5 h-5 text-cyan-400" />
                   <span>Account Settings</span>
                 </h2>
-                <div className="space-y-4">
+                <form onSubmit={handleUpdateAdmin} className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Admin Username</label>
-                    <input type="text" value="fahadmalik" disabled className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-gray-400" />
+                    <input 
+                      type="text" 
+                      value={adminData.username} 
+                      onChange={(e) => setAdminData({ ...adminData, username: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-cyan-400 outline-none transition-all" 
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Admin Password</label>
-                    <input type="text" value="fahadmalik123" disabled className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-gray-400" />
+                    <input 
+                      type="password" 
+                      value={adminData.password} 
+                      onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-cyan-400 outline-none transition-all" 
+                    />
                   </div>
-                  <p className="text-xs text-gray-500 italic">Note: These credentials are currently hardcoded for security in this demo.</p>
-                </div>
+                  <div className="pt-2">
+                    <button 
+                      type="submit"
+                      disabled={isSavingAdmin}
+                      className="px-6 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all disabled:opacity-50"
+                    >
+                      {isSavingAdmin ? 'Saving...' : 'Update Credentials'}
+                    </button>
+                  </div>
+                </form>
               </div>
 
               <div className="glass-panel p-8 rounded-3xl border border-white/5">

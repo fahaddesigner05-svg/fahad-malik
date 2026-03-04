@@ -10,13 +10,24 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'fahadmalik' && password === 'fahadmalik123') {
-      localStorage.setItem('isAdminAuthenticated', 'true');
-      navigate('/admin/dashboard');
-    } else {
-      setError('Invalid username or password');
+    try {
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const result = await response.json();
+      if (result.success) {
+        localStorage.setItem('isAdminAuthenticated', 'true');
+        navigate('/admin/dashboard');
+      } else {
+        setError(result.error || 'Invalid username or password');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login');
     }
   };
 
