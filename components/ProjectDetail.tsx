@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowLeft, ExternalLink, Calendar, Tag, Info } from 'lucide-react';
+import CustomCursor from './CustomCursor';
 
 interface ProjectData {
   _id: string;
@@ -72,7 +73,8 @@ const ProjectDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0c10] text-white selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[#0b0c10] text-white selection:bg-cyan-500 selection:text-white cursor-none">
+      <CustomCursor />
       {/* Navigation Header */}
       <header className="fixed top-0 left-0 right-0 z-50 p-6 bg-black/20 backdrop-blur-md border-b border-white/5">
         <div className="container mx-auto flex items-center justify-between">
