@@ -63,7 +63,9 @@
                 cursor: none !important;
             }
             
-            video, iframe, embed, object {
+            video, iframe, embed, object, input[type="range"],
+            input[type="range"]::-webkit-slider-thumb,
+            input[type="range"]::-webkit-slider-runnable-track {
                 cursor: none !important;
             }
             
@@ -75,7 +77,15 @@
             video::-webkit-media-controls-time-remaining-display,
             video::-webkit-media-controls-mute-button,
             video::-webkit-media-controls-toggle-closed-captions-button,
-            video::-webkit-media-controls-volume-slider {
+            video::-webkit-media-controls-volume-slider,
+            video::-webkit-media-controls-timeline,
+            video::-webkit-media-controls-fullscreen-button,
+            video::-webkit-media-controls-overflow-button,
+            video::-webkit-media-controls-enclosure,
+            video::-webkit-media-controls-container,
+            video::-webkit-media-controls-volume-slider-container,
+            video::-internal-media-controls-download-button,
+            video::-internal-media-controls-cast-button {
                 cursor: none !important;
             }
         }
