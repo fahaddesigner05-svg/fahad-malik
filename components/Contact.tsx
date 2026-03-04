@@ -58,7 +58,7 @@ const Contact: React.FC = () => {
                </div>
                <div>
                   <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">Email Me</p>
-                  <p className="font-semibold text-white">hello@fahadmalik.com</p>
+                  <a href="mailto:fahaddesigner05@gmail.com" className="font-semibold text-white hover:text-cyan-400 transition-colors">fahaddesigner05@gmail.com</a>
                </div>
             </div>
             
