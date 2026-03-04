@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProjectData {
   _id: string;
@@ -12,6 +13,7 @@ interface ProjectData {
 }
 
 const Projects: React.FC = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -140,7 +142,13 @@ const Projects: React.FC = () => {
                   {project.category}
                 </span>
                 <h4 className="text-3xl font-bold text-white mb-4">{project.title}</h4>
-                <button className="flex items-center space-x-2 text-white/60 group-hover:text-white transition-colors">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/project/${project._id}`);
+                  }}
+                  className="flex items-center space-x-2 text-white/60 group-hover:text-white transition-colors"
+                >
                   <span className="font-semibold">Case Study</span>
                   <i className="fas fa-external-link-alt text-xs"></i>
                 </button>
