@@ -13,6 +13,7 @@ import TextDivider from './components/TextDivider';
 import Login from './components/Admin/Login';
 import Dashboard from './components/Admin/Dashboard';
 import ProjectDetail from './components/ProjectDetail';
+import AllProjects from './components/AllProjects';
 
 const MainSite: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -85,6 +86,7 @@ const App: React.FC = () => {
       <Route path="/admin/login" element={<Login />} />
       <Route path="/admin/dashboard" element={<Dashboard />} />
       <Route path="/project/:id" element={<ProjectDetail />} />
+      <Route path="/projects" element={<AllProjects />} />
       {/* Redirect any other admin routes to login or dashboard */}
       <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
     </Routes>

@@ -95,9 +95,12 @@ const Projects: React.FC = () => {
           <h3 className="text-cyan-400 font-bold uppercase tracking-widest text-sm mb-2">Portfolio</h3>
           <h2 className="text-4xl md:text-5xl font-black">Featured Projects</h2>
         </div>
-        <button className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2 font-semibold">
+        <button 
+          onClick={() => navigate('/projects')}
+          className="text-gray-400 hover:text-white transition-colors flex items-center space-x-2 font-semibold group"
+        >
           <span>View All Work</span>
-          <i className="fas fa-arrow-right"></i>
+          <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
         </button>
       </div>
 
