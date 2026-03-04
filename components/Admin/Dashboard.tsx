@@ -444,8 +444,28 @@ const Dashboard: React.FC = () => {
                   projects.map((project) => (
                     <div key={project._id} className="glass-panel rounded-2xl border border-white/5 overflow-hidden group">
                       <div className="h-40 relative">
-                        <img src={project.img} alt={project.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
-                        <div className="absolute top-2 right-2 flex space-x-2">
+                        {project.videoLink && (project.videoLink.includes('youtube.com/watch?v=') || project.videoLink.includes('youtu.be/')) ? (
+                          <div className="w-full h-full bg-black flex items-center justify-center">
+                            <i className="fab fa-youtube text-4xl text-red-600"></i>
+                          </div>
+                        ) : project.videoLink && project.videoLink.match(/\.(mp4|webm|ogg)$/i) ? (
+                          <video 
+                            src={project.videoLink} 
+                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
+                            muted
+                            playsInline
+                            onMouseOver={(e) => e.currentTarget.play()}
+                            onMouseOut={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                          />
+                        ) : (
+                          <img 
+                            src={project.img} 
+                            alt={project.title} 
+                            className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" 
+                            referrerPolicy="no-referrer"
+                          />
+                        )}
+                        <div className="absolute top-2 right-2 flex space-x-2 z-10">
                           <button 
                             onClick={() => handleOpenModal(project)}
                             className="p-2 rounded-lg bg-black/60 text-white hover:bg-cyan-500 hover:text-black transition-all"
