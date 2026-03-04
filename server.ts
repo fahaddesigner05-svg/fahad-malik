@@ -1,9 +1,9 @@
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import dotenv from 'dotenv';
-import dbConnect from './lib/mongodb';
-import Project from './models/Project';
-import Message from './models/Message';
+import dbConnect from './lib/mongodb.js';
+import Project from './models/Project.js';
+import Message from './models/Message.js';
 
 dotenv.config();
 

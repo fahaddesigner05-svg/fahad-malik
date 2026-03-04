@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import dbConnect from '../lib/mongodb';
-import Project from '../models/Project';
+import dbConnect from '../lib/mongodb.js';
+import Project from '../models/Project.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST' && req.method !== 'GET') {
