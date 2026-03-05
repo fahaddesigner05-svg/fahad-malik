@@ -58,11 +58,15 @@
         }
         
         /* Custom Cursor Styling */
+        html, body, #root, *, *::before, *::after {
+            cursor: none !important;
+        }
+        
+        a, button, input, textarea, select, iframe, video, .cursor-pointer, [role="button"] {
+            cursor: none !important;
+        }
+
         @media (min-width: 768px) {
-            *, *::before, *::after {
-                cursor: none !important;
-            }
-            
             video, iframe, embed, object, input[type="range"],
             input[type="range"]::-webkit-slider-thumb,
             input[type="range"]::-webkit-slider-runnable-track {
@@ -99,10 +103,11 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
             z-index: 2147483647;
+            cursor: none !important;
         }
 
         .custom-pointer {

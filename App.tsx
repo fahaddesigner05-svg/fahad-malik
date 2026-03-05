@@ -25,6 +25,16 @@ const MainSite: React.FC = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'views' }),
     }).catch(err => console.error('Analytics error:', err));
+    
+    // Periodically ensure all iframes have cursor: none to fix the glitch
+    const cursorInterval = setInterval(() => {
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        if (iframe.style.cursor !== 'none') {
+          iframe.style.setProperty('cursor', 'none', 'important');
+        }
+      });
+    }, 1000);
 
     const handleScroll = () => {
       const sections = ['home', 'about', 'projects', 'skills', 'contact'];
@@ -42,7 +52,10 @@ const MainSite: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearInterval(cursorInterval);
+    };
   }, []);
 
   return (

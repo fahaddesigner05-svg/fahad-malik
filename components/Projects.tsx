@@ -90,6 +90,11 @@ const Projects: React.FC = () => {
 
   return (
     <div className="container mx-auto px-6">
+      <style>{`
+        iframe, video, .cursor-none {
+          cursor: none !important;
+        }
+      `}</style>
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
         <div>
           <h3 className="text-cyan-400 font-bold uppercase tracking-widest text-sm mb-2">Portfolio</h3>
@@ -117,7 +122,7 @@ const Projects: React.FC = () => {
               {project.videoLink && (project.videoLink.includes('youtube.com/watch?v=') || project.videoLink.includes('youtu.be/')) ? (
                 <iframe 
                   src={`https://www.youtube.com/embed/${project.videoLink.includes('v=') ? project.videoLink.split('v=')[1].split('&')[0] : project.videoLink.split('/').pop()}`}
-                  className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-110 cursor-none"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -125,7 +130,7 @@ const Projects: React.FC = () => {
               ) : project.videoLink && project.videoLink.match(/\.(mp4|webm|ogg)$/i) ? (
                 <video 
                   src={project.videoLink} 
-                  className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-110 cursor-none"
                   autoPlay
                   muted
                   loop

@@ -74,6 +74,11 @@ const ProjectDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0b0c10] text-white selection:bg-cyan-500 selection:text-white cursor-none relative overflow-hidden">
+      <style>{`
+        iframe, video, .cursor-none {
+          cursor: none !important;
+        }
+      `}</style>
       <CustomCursor />
       
       {/* Creative Background Elements */}
@@ -204,7 +209,7 @@ const ProjectDetail: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="w-full h-full max-h-[85vh] rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/10 relative group z-10"
+            className="w-full h-full max-h-[85vh] rounded-[48px] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] border border-white/10 relative group z-10 cursor-none"
           >
             {project.videoLink && (project.videoLink.includes('youtube.com/watch?v=') || project.videoLink.includes('youtu.be/')) ? (
               <iframe 
