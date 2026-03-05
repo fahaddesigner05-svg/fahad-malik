@@ -271,7 +271,7 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0b0c10] text-white flex">
+    <div className="min-h-screen bg-[#0b0c10] text-white flex admin-area">
       {/* Sidebar */}
       <aside className="w-64 border-r border-white/5 bg-black/20 backdrop-blur-xl flex flex-col">
         <div className="p-8">

@@ -6,7 +6,11 @@ const CustomCursor: React.FC = () => {
   const [ringPosition, setRingPosition] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
+    setIsAdmin(window.location.pathname.startsWith('/admin'));
+    
     const onMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
@@ -51,6 +55,8 @@ const CustomCursor: React.FC = () => {
     animationFrameId = requestAnimationFrame(followMouse);
     return () => cancelAnimationFrame(animationFrameId);
   }, [position]);
+
+  if (isAdmin) return null;
 
   return (
     <div className={`custom-cursor-container hidden md:block ${isHovering ? 'cursor-hover' : ''}`}>
