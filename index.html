@@ -116,8 +116,14 @@
             height: 16px; /* Reduced from 20px */
             transform: translate(0, 0);
             z-index: 10000;
-            filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.8));
+            animation: pointerGlowCycle 4s linear infinite;
             transition: transform 0.1s ease-out;
+        }
+
+        @keyframes pointerGlowCycle {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.8)); }
+            33% { filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)); }
+            66% { filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.8)); }
         }
 
         .custom-cursor-ring {
@@ -129,14 +135,31 @@
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s, border-color 0.3s, background-color 0.3s;
             box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+            animation: colorCycle 4s linear infinite, pulseRing 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseRing {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.4; }
+        }
+
+        @keyframes colorCycle {
+            0%, 100% { border-color: #22d3ee; box-shadow: 0 0 15px rgba(34, 211, 238, 0.5); --cursor-color: #22d3ee; }
+            33% { border-color: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); --cursor-color: #a855f7; }
+            66% { border-color: #ec4899; box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); --cursor-color: #ec4899; }
         }
 
         .cursor-hover .custom-cursor-ring {
             width: 44px; /* Reduced from 50px */
             height: 44px; /* Reduced from 50px */
-            background-color: rgba(34, 211, 238, 0.1);
-            border-color: #a855f7;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+            background-color: rgba(255, 255, 255, 0.05);
+            border-style: dashed;
+            animation: colorCycle 2s linear infinite, rotateRing 4s linear infinite;
+        }
+
+        @keyframes rotateRing {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .cursor-hover .custom-pointer {
