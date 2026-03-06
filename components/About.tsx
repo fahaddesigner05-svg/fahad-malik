@@ -13,9 +13,47 @@ const About: React.FC = () => {
       {/* Decorative Blur */}
       <div className="absolute top-1/2 left-0 w-64 h-64 bg-cyan-500/10 blur-[100px] pointer-events-none"></div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Left: Visual Storytelling */}
-        <div className="relative group order-2 lg:order-1">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        {/* Left: Content */}
+        <div className="space-y-8 order-1 lg:order-1 lg:-mt-20">
+          <div>
+            <h3 className="text-cyan-400 font-bold uppercase tracking-[0.3em] text-sm mb-2">Discovery</h3>
+            <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              Designing the <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Future</span> of Digital Experience
+            </h2>
+          </div>
+
+          <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
+            I am Fahad Malik, a multidisciplinary designer specializing in high-end UI/UX and visual identities. My approach blends artistic intuition with data-driven strategy to create interfaces that aren't just seen—they are felt.
+          </p>
+
+          <div className="grid grid-cols-3 gap-6 pt-6">
+            {stats.map((stat, i) => (
+              <div key={i} className={`p-4 glass-panel rounded-2xl border-white/5 shadow-lg ${stat.glow}`}>
+                <div className={`text-2xl md:text-3xl font-black mb-1 ${stat.color}`}>{stat.value}</div>
+                <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider leading-tight">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-8 w-full">
+            <div className="aspect-video glass-panel rounded-2xl border border-white/10 overflow-hidden relative group cursor-pointer shadow-2xl">
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center group-hover:bg-black/40 transition-all duration-500 z-10">
+                <div className="w-16 h-16 rounded-full border-2 border-cyan-400 flex items-center justify-center bg-cyan-400/10 group-hover:bg-cyan-400 group-hover:scale-110 transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                  <i className="fas fa-play text-cyan-400 group-hover:text-black text-xl ml-1"></i>
+                </div>
+              </div>
+              {/* Video Placeholder Background */}
+              <div className="w-full h-full bg-slate-900 flex items-center justify-center relative">
+                <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800')] bg-cover bg-center"></div>
+                <div className="relative z-0 text-gray-500 text-[10px] uppercase tracking-widest font-bold">Video Preview Placeholder</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Visual Storytelling */}
+        <div className="relative group order-2 lg:order-2 lg:self-center">
           <div className="relative z-10 glass-panel p-2 rounded-[2rem] border-white/10 overflow-hidden transform group-hover:rotate-1 transition-transform duration-500">
              <div className="aspect-[4/5] bg-slate-900 rounded-[1.8rem] overflow-hidden relative">
                 <img 
@@ -38,39 +76,6 @@ const About: React.FC = () => {
           {/* Decorative Frames */}
           <div className="absolute -top-6 -left-6 w-full h-full border-2 border-cyan-400/20 rounded-[2rem] -z-10 group-hover:-translate-x-2 group-hover:-translate-y-2 transition-transform duration-500"></div>
           <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-purple-500/20 blur-3xl -z-10 animate-pulse"></div>
-        </div>
-
-        {/* Right: Content */}
-        <div className="space-y-8 order-1 lg:order-2">
-          <div>
-            <h3 className="text-cyan-400 font-bold uppercase tracking-[0.3em] text-sm mb-4">Discovery</h3>
-            <h2 className="text-4xl md:text-6xl font-extrabold leading-tight">
-              Designing the <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Future</span> of Digital Experience
-            </h2>
-          </div>
-
-          <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
-            I am Fahad Malik, a multidisciplinary designer specializing in high-end UI/UX and visual identities. My approach blends artistic intuition with data-driven strategy to create interfaces that aren't just seen—they are felt.
-          </p>
-
-          <div className="grid grid-cols-3 gap-6 pt-6">
-            {stats.map((stat, i) => (
-              <div key={i} className={`p-4 glass-panel rounded-2xl border-white/5 shadow-lg ${stat.glow}`}>
-                <div className={`text-2xl md:text-3xl font-black mb-1 ${stat.color}`}>{stat.value}</div>
-                <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider leading-tight">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="pt-8 flex items-center space-x-6">
-            <button className="flex items-center space-x-3 group">
-               <div className="w-12 h-12 rounded-full border border-cyan-400 flex items-center justify-center group-hover:bg-cyan-400 transition-all duration-300">
-                  <i className="fas fa-play text-cyan-400 group-hover:text-black text-xs ml-1"></i>
-               </div>
-               <span className="font-bold uppercase tracking-widest text-xs text-white/80 group-hover:text-white transition-colors">See the process</span>
-            </button>
-            <div className="h-px w-20 bg-white/10"></div>
-          </div>
         </div>
       </div>
     </div>
