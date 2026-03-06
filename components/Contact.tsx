@@ -53,9 +53,9 @@ const Contact: React.FC = () => {
           
           <div className="space-y-6">
             <div className="flex items-center space-x-4">
-               <div className="w-10 h-10 rounded-full bg-cyan-500/10 flex-shrink-0 flex items-center justify-center text-cyan-400 border border-cyan-500/20">
+               <a href="mailto:fahaddesigner05@gmail.com" className="w-10 h-10 rounded-full bg-cyan-500/10 flex-shrink-0 flex items-center justify-center text-cyan-400 border border-cyan-500/20 hover:bg-cyan-400 hover:text-black hover:border-cyan-400 hover:scale-110 transition-all duration-300">
                   <i className="fas fa-envelope"></i>
-               </div>
+               </a>
                <div className="min-w-0">
                   <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">Email Me</p>
                   <a href="mailto:fahaddesigner05@gmail.com" className="font-semibold text-white hover:text-cyan-400 transition-colors text-sm lg:text-base leading-tight">
@@ -66,9 +66,9 @@ const Contact: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-               <div className="w-10 h-10 rounded-full bg-purple-500/10 flex-shrink-0 flex items-center justify-center text-purple-400 border border-purple-500/20">
+               <a href="https://wa.me/923366595699" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-purple-500/10 flex-shrink-0 flex items-center justify-center text-purple-400 border border-purple-500/20 hover:bg-purple-500 hover:text-white hover:border-purple-500 hover:scale-110 transition-all duration-300">
                   <i className="fab fa-whatsapp"></i>
-               </div>
+               </a>
                <div>
                   <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">WhatsApp Me</p>
                   <a href="https://wa.me/923366595699" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:text-purple-400 transition-colors">
@@ -80,7 +80,7 @@ const Contact: React.FC = () => {
             <div className="pt-10">
                 <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mb-4">Follow My Journey</p>
                 <div className="flex space-x-4">
-                   {['behance', 'dribbble', 'instagram', 'linkedin'].map(social => (
+                   {['behance', 'facebook', 'instagram', 'linkedin'].map(social => (
                        <a key={social} href="#" className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-cyan-600 transition-all">
                           <i className={`fab fa-${social}`}></i>
                        </a>

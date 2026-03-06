@@ -1,7 +1,12 @@
 
 import React from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
 
 const Hero: React.FC = () => {
+  const { scrollYProgress } = useScroll();
+  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
+  const scrollIndicatorY = useTransform(scrollYProgress, [0, 0.05], [0, 20]);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -10,7 +15,10 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center px-6 lg:px-24 overflow-hidden pt-16">
+    <div className="relative min-h-screen flex items-center px-6 lg:px-24 overflow-hidden pt-16 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed">
+      {/* Dark Overlay for readability */}
+      <div className="absolute inset-0 bg-slate-950/85 z-0"></div>
+      
       {/* Background Ambience */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-600/20 rounded-full blur-[120px] pointer-events-none"></div>
@@ -108,21 +116,6 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator Mouse with Ring */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-2 opacity-60 animate-bounce">
-         <div className="w-6 h-10 rounded-full border-2 border-purple-500 relative flex justify-center p-1 shadow-[0_0_10px_rgba(168,85,247,0.5)]">
-            <div className="w-1 h-2 bg-purple-400 rounded-full animate-scroll"></div>
-         </div>
-         <div className="w-8 h-8 rounded-full border border-purple-400/30 flex items-center justify-center animate-pulse">
-            <i className="fas fa-chevron-down text-[8px] text-purple-400"></i>
-         </div>
-         <style>{`
-            @keyframes scroll {
-                0% { transform: translateY(0); opacity: 1; }
-                100% { transform: translateY(12px); opacity: 0; }
-            }
-         `}</style>
-      </div>
     </div>
   );
 };
