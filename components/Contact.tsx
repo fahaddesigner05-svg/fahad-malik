@@ -67,11 +67,13 @@ const Contact: React.FC = () => {
             
             <div className="flex items-center space-x-4">
                <div className="w-10 h-10 rounded-full bg-purple-500/10 flex-shrink-0 flex items-center justify-center text-purple-400 border border-purple-500/20">
-                  <i className="fas fa-phone"></i>
+                  <i className="fab fa-whatsapp"></i>
                </div>
                <div>
-                  <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">Call Me</p>
-                  <p className="font-semibold text-white">+92 300 0000000</p>
+                  <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">WhatsApp Me</p>
+                  <a href="https://wa.me/923366595699" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:text-purple-400 transition-colors">
+                    +92 336 6595699
+                  </a>
                </div>
             </div>
 
