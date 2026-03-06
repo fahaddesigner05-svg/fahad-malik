@@ -53,7 +53,7 @@ const About: React.FC = () => {
         </div>
 
         {/* Right: Visual Storytelling */}
-        <div className="relative group order-2 lg:order-2 lg:self-center">
+        <div className="relative group order-2 lg:order-2 lg:-mt-10">
           <div className="relative z-10 glass-panel p-2 rounded-[2rem] border-white/10 overflow-hidden transform group-hover:rotate-1 transition-transform duration-500">
              <div className="aspect-[4/5] bg-slate-900 rounded-[1.8rem] overflow-hidden relative">
                 <img 
