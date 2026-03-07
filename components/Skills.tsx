@@ -5,7 +5,7 @@ const SKILLS = [
   { name: "UI/UX Design", level: 95, icon: "fa-bezier-curve", color: "text-cyan-400" },
   { name: "Graphic Design", level: 90, icon: "fa-palette", color: "text-purple-400" },
   { name: "Brand Identity", level: 85, icon: "fa-copyright", color: "text-pink-400" },
-  { name: "Motion Graphics", level: 80, icon: "fa-film", color: "text-blue-400" },
+  { name: "Web Design", level: 80, icon: "fa-laptop-code", color: "text-blue-400" },
   { name: "Figma / Adobe XD", level: 98, icon: "fa-pen-nib", color: "text-cyan-400" },
   { name: "Photoshop", level: 92, icon: "fa-image", color: "text-purple-400" },
 ];
