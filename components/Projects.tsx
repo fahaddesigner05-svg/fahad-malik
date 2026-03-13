@@ -126,6 +126,18 @@ const Projects: React.FC = () => {
                   muted
                   loop
                   playsInline
+                  onError={(e) => {
+                    const video = e.target as HTMLVideoElement;
+                    video.style.display = 'none';
+                    const parent = video.parentElement;
+                    if (parent) {
+                      const img = document.createElement('img');
+                      img.src = project.coverImg || project.img || 'https://picsum.photos/seed/error/800/600';
+                      img.className = "w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-110";
+                      img.referrerPolicy = "no-referrer";
+                      parent.appendChild(img);
+                    }
+                  }}
                 />
               ) : (
                 <img 

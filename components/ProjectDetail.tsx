@@ -319,6 +319,18 @@ const ProjectDetail: React.FC = () => {
                 loop
                 playsInline
                 controls
+                onError={(e) => {
+                  const video = e.target as HTMLVideoElement;
+                  video.style.display = 'none';
+                  const parent = video.parentElement;
+                  if (parent) {
+                    const img = document.createElement('img');
+                    img.src = project.coverImg || project.img || 'https://picsum.photos/seed/error/800/600';
+                    img.className = "w-full h-auto";
+                    img.referrerPolicy = "no-referrer";
+                    parent.appendChild(img);
+                  }
+                }}
               />
             ) : project.coverImg || project.img ? (
               <img 

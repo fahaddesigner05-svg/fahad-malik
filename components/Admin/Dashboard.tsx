@@ -692,7 +692,7 @@ const Dashboard: React.FC = () => {
                   projects.map((project) => (
                     <div key={project._id} className="glass-panel rounded-2xl border border-white/5 overflow-hidden group">
                       <div className="h-40 relative">
-                        {project.videoLink && (project.videoLink.includes('youtube.com/watch?v=') || project.videoLink.includes('youtu.be/')) ? (
+                        {project.videoLink && (project.videoLink.includes('youtube.com') || project.videoLink.includes('youtu.be')) ? (
                           <div className="w-full h-full bg-black flex items-center justify-center">
                             <i className="fab fa-youtube text-4xl text-red-600"></i>
                           </div>
@@ -702,7 +702,18 @@ const Dashboard: React.FC = () => {
                             className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
                             muted
                             playsInline
-                            onMouseOver={(e) => e.currentTarget.play()}
+                            onError={(e) => {
+                              // Fallback if video fails to load
+                              (e.target as HTMLVideoElement).style.display = 'none';
+                              const parent = (e.target as HTMLVideoElement).parentElement;
+                              if (parent) {
+                                const img = document.createElement('img');
+                                img.src = project.coverImg || project.img || 'https://picsum.photos/seed/error/800/600';
+                                img.className = "w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity";
+                                parent.appendChild(img);
+                              }
+                            }}
+                            onMouseOver={(e) => e.currentTarget.play().catch(() => {})}
                             onMouseOut={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                           />
                         ) : (
@@ -818,35 +829,6 @@ const Dashboard: React.FC = () => {
                 </h2>
                 <form onSubmit={handleUpdateSettings} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Upload Video from Local</label>
-                    <div className="relative group">
-                      <input 
-                        type="file" 
-                        accept="video/*"
-                        onChange={handleVideoUpload}
-                        className="hidden" 
-                        id="video-upload"
-                      />
-                      <label 
-                        htmlFor="video-upload"
-                        className={`w-full bg-white/5 border border-dashed border-white/20 rounded-xl px-4 py-8 text-center cursor-pointer hover:border-cyan-400 hover:bg-cyan-400/5 transition-all flex flex-col items-center justify-center space-y-2 ${isUploadingVideo ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      >
-                        <Upload className={`w-8 h-8 ${isUploadingVideo ? 'animate-bounce text-cyan-400' : 'text-gray-400 group-hover:text-cyan-400'}`} />
-                        <span className="text-sm text-gray-400 group-hover:text-white">
-                          {isUploadingVideo ? 'Uploading...' : 'Click to select or drag & drop video'}
-                        </span>
-                        <span className="text-xs text-gray-500">Max size: 100MB</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4 py-2">
-                    <div className="h-px bg-white/10 flex-grow"></div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">OR</span>
-                    <div className="h-px bg-white/10 flex-grow"></div>
-                  </div>
-
-                  <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">About Video Link (Direct URL or YouTube)</label>
                     <input 
                       type="text" 
@@ -859,32 +841,6 @@ const Dashboard: React.FC = () => {
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Video Placeholder Image URL</label>
                     <div className="space-y-4">
-                      <div className="relative group">
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden" 
-                          id="image-upload"
-                        />
-                        <label 
-                          htmlFor="image-upload"
-                          className={`w-full bg-white/5 border border-dashed border-white/20 rounded-xl px-4 py-8 text-center cursor-pointer hover:border-cyan-400 hover:bg-cyan-400/5 transition-all flex flex-col items-center justify-center space-y-2 ${isUploadingImage ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        >
-                          <Upload className={`w-8 h-8 ${isUploadingImage ? 'animate-bounce text-cyan-400' : 'text-gray-400 group-hover:text-cyan-400'}`} />
-                          <span className="text-sm text-gray-400 group-hover:text-white">
-                            {isUploadingImage ? 'Uploading...' : 'Click to select or drag & drop image'}
-                          </span>
-                          <span className="text-xs text-gray-500">Max size: 10MB</span>
-                        </label>
-                      </div>
-
-                      <div className="flex items-center space-x-4 py-2">
-                        <div className="h-px bg-white/10 flex-grow"></div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">OR</span>
-                        <div className="h-px bg-white/10 flex-grow"></div>
-                      </div>
-
                       <input 
                         type="text" 
                         placeholder="e.g. https://images.unsplash.com/..."
@@ -916,7 +872,22 @@ const Dashboard: React.FC = () => {
                           frameBorder="0"
                         ></iframe>
                       ) : (
-                        <video src={settings.aboutVideoLink} className="w-full h-full object-contain" controls />
+                        <video 
+                          src={settings.aboutVideoLink} 
+                          className="w-full h-full object-contain" 
+                          controls 
+                          onError={(e) => {
+                            const video = e.target as HTMLVideoElement;
+                            video.style.display = 'none';
+                            const parent = video.parentElement;
+                            if (parent) {
+                              const placeholder = document.createElement('div');
+                              placeholder.className = "w-full h-full flex items-center justify-center bg-white/5 text-gray-500 text-xs text-center p-4";
+                              placeholder.innerText = "Video source not supported or invalid URL. Please provide a direct video link or YouTube URL.";
+                              parent.appendChild(placeholder);
+                            }
+                          }}
+                        />
                       )}
                     </div>
                   </div>
@@ -1148,23 +1119,7 @@ const Dashboard: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500">Project Images</label>
-                  <div className="flex items-center space-x-4">
-                    <input 
-                      type="file" 
-                      id="project-image-upload" 
-                      className="hidden" 
-                      accept="image/*" 
-                      onChange={handleProjectImageUpload} 
-                    />
-                    <button 
-                      type="button"
-                      disabled={isUploadingProjectImage}
-                      onClick={() => document.getElementById('project-image-upload')?.click()}
-                      className="text-xs font-bold text-cyan-400 hover:underline flex items-center space-x-1 disabled:opacity-50"
-                    >
-                      <Upload className="w-3 h-3" />
-                      <span>{isUploadingProjectImage ? 'Uploading...' : 'Upload Image'}</span>
-                    </button>
+                  <div className="flex items-center justify-end">
                     <button 
                       type="button"
                       onClick={() => setFormData({...formData, images: [...formData.images, '']})}
@@ -1232,38 +1187,13 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Video (Optional)</label>
-                  <div className="flex items-center space-x-3">
-                    <input 
-                      type="file" 
-                      id="project-video-upload" 
-                      className="hidden" 
-                      accept="video/*" 
-                      onChange={handleProjectVideoUpload} 
-                    />
-                    <button 
-                      type="button"
-                      disabled={isUploadingProjectVideo}
-                      onClick={() => document.getElementById('project-video-upload')?.click()}
-                      className="flex-1 bg-white/5 border border-dashed border-white/20 rounded-xl px-4 py-3 text-center cursor-pointer hover:border-cyan-400 hover:bg-cyan-400/5 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
-                    >
-                      <Upload className={`w-4 h-4 ${isUploadingProjectVideo ? 'animate-bounce text-cyan-400' : 'text-gray-400'}`} />
-                      <span className="text-sm text-gray-400">
-                        {isUploadingProjectVideo ? 'Uploading Video...' : formData.videoLink ? 'Change Video' : 'Upload Video'}
-                      </span>
-                    </button>
-                    {formData.videoLink && (
-                      <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-cyan-400 truncate">
-                        {formData.videoLink}
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-2">
+                  <div>
                     <input 
                       type="text" 
-                      placeholder="Or paste video URL here..."
+                      placeholder="Paste video URL here..."
                       value={formData.videoLink}
                       onChange={(e) => setFormData({...formData, videoLink: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:border-cyan-400 outline-none transition-all"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-cyan-400 outline-none transition-all"
                     />
                   </div>
                 </div>

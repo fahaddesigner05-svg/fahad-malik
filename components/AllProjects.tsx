@@ -145,7 +145,19 @@ const AllProjects: React.FC = () => {
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
                       muted
                       playsInline
-                      onMouseOver={(e) => e.currentTarget.play()}
+                      onError={(e) => {
+                        const video = e.target as HTMLVideoElement;
+                        video.style.display = 'none';
+                        const parent = video.parentElement;
+                        if (parent) {
+                          const img = document.createElement('img');
+                          img.src = project.coverImg || project.img || 'https://picsum.photos/seed/error/800/600';
+                          img.className = "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110";
+                          img.referrerPolicy = "no-referrer";
+                          parent.appendChild(img);
+                        }
+                      }}
+                      onMouseOver={(e) => e.currentTarget.play().catch(() => {})}
                       onMouseOut={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
                     />
                   ) : (

@@ -213,6 +213,20 @@ const About: React.FC = () => {
                       className="w-full h-full object-contain"
                       controls
                       autoPlay
+                      onError={(e) => {
+                        const video = e.target as HTMLVideoElement;
+                        video.style.display = 'none';
+                        const parent = video.parentElement;
+                        if (parent) {
+                          const placeholder = document.createElement('div');
+                          placeholder.className = "w-full h-full flex flex-col items-center justify-center bg-black text-gray-500 text-xs text-center p-8 space-y-4";
+                          placeholder.innerHTML = `
+                            <i class="fas fa-exclamation-triangle text-2xl text-amber-500"></i>
+                            <p>This video source is not supported or the link is invalid.<br/>Please use a direct .mp4 link or a YouTube URL.</p>
+                          `;
+                          parent.appendChild(placeholder);
+                        }
+                      }}
                     />
                   ) : null}
                 </div>
