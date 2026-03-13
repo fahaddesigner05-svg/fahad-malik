@@ -4,12 +4,12 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import dbConnect from './lib/mongodb.js';
-import Project from './models/Project.js';
-import Message from './models/Message.js';
-import Admin from './models/Admin.js';
-import Analytics from './models/Analytics.js';
-import Settings from './models/Settings.js';
+import dbConnect from './lib/mongodb';
+import Project from './models/Project';
+import Message from './models/Message';
+import Admin from './models/Admin';
+import Analytics from './models/Analytics';
+import Settings from './models/Settings';
 
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
@@ -354,7 +354,7 @@ async function startServer() {
 // Export for Vercel
 export default app;
 
-// Only start the server if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}` || process.env.NODE_ENV !== 'production') {
+// Only start the server if not on Vercel (local dev)
+if (!process.env.VERCEL) {
   startServer();
 }
