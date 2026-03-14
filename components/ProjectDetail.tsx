@@ -153,7 +153,7 @@ const ProjectDetail: React.FC = () => {
       
       {/* Close Button */}
       <button 
-        onClick={() => navigate('/')}
+        onClick={() => navigate(-1)}
         className="fixed top-4 right-4 lg:top-8 lg:right-8 z-[150] w-10 h-10 lg:w-12 lg:h-12 bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-full flex items-center justify-center text-white hover:bg-red-500/20 hover:scale-110 transition-all duration-300 group"
       >
         <X className="w-5 h-5 lg:w-6 lg:h-6 group-hover:rotate-90 transition-transform duration-300" />
@@ -184,59 +184,55 @@ const ProjectDetail: React.FC = () => {
           </h1>
 
           {/* Role & Timeline Grid */}
-          <div className="relative mb-16 py-12">
-            {/* Top Decorative Line */}
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-white/5">
-              <div className="absolute top-0 left-1/4 w-1/2 h-full bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-cyan-400 rounded-full"></div>
-            </div>
+          <div className="relative mb-16 p-8 rounded-2xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 backdrop-blur-md shadow-2xl group overflow-hidden">
+            {/* Animated Background Glow */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-cyan-500/10 blur-[80px] group-hover:bg-cyan-500/20 transition-all duration-700"></div>
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/10 blur-[80px] group-hover:bg-purple-500/20 transition-all duration-700"></div>
+            
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/30 rounded-tl-xl transition-all duration-500 group-hover:w-12 group-hover:h-12 group-hover:border-cyan-400"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-purple-400/30 rounded-br-xl transition-all duration-500 group-hover:w-12 group-hover:h-12 group-hover:border-purple-400"></div>
 
-            <div className="grid grid-cols-2 gap-8">
-              <div className="group cursor-default">
-              <div className="flex items-center gap-2 mb-4">
-                <User className="w-3 h-3 text-gray-500 group-hover:text-cyan-400 transition-colors duration-300" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 group-hover:text-cyan-400 transition-colors duration-300">Role</h3>
+            <div className="grid grid-cols-2 gap-8 relative z-10">
+              <div className="group/item cursor-default">
+                <div className="flex items-center gap-2 mb-4">
+                  <User className="w-3 h-3 text-gray-500 group-hover/item:text-cyan-400 transition-colors duration-300" />
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 group-hover/item:text-cyan-400 transition-colors duration-300">Role</h3>
+                </div>
+                <div className="relative inline-block">
+                  <p className="text-white font-black text-2xl tracking-tighter uppercase group-hover/item:text-cyan-400 transition-colors duration-300">
+                    {project.role || 'Lead Designer'}
+                  </p>
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    whileHover={{ width: '100%' }}
+                    className="absolute -bottom-1 left-0 h-[2px] bg-cyan-400/30"
+                  />
+                </div>
               </div>
-              <div className="relative inline-block">
-                <p className="text-white font-black text-2xl tracking-tighter uppercase group-hover:text-cyan-400 transition-colors duration-300">
-                  {project.role || 'Lead Designer'}
-                </p>
-                <motion.div 
-                  initial={{ width: 0 }}
-                  whileHover={{ width: '100%' }}
-                  className="absolute -bottom-1 left-0 h-[2px] bg-cyan-400/30"
-                />
+              <div className="group/item cursor-default">
+                <div className="flex items-center gap-2 mb-4">
+                  <Calendar className="w-3 h-3 text-gray-500 group-hover/item:text-purple-400 transition-colors duration-300" />
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 group-hover/item:text-purple-400 transition-colors duration-300">Timeline</h3>
+                </div>
+                <div className="relative inline-block">
+                  <p className="text-white font-black text-2xl tracking-tighter uppercase group-hover/item:text-purple-400 transition-colors duration-300">
+                    {project.timeline || (project.createdAt ? new Date(project.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026')}
+                  </p>
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    whileHover={{ width: '100%' }}
+                    className="absolute -bottom-1 left-0 h-[2px] bg-purple-400/30"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="group cursor-default">
-              <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-3 h-3 text-gray-500 group-hover:text-purple-400 transition-colors duration-300" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 group-hover:text-purple-400 transition-colors duration-300">Timeline</h3>
-              </div>
-              <div className="relative inline-block">
-                <p className="text-white font-black text-2xl tracking-tighter uppercase group-hover:text-purple-400 transition-colors duration-300">
-                  {project.timeline || (project.createdAt ? new Date(project.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026')}
-                </p>
-                <motion.div 
-                  initial={{ width: 0 }}
-                  whileHover={{ width: '100%' }}
-                  className="absolute -bottom-1 left-0 h-[2px] bg-purple-400/30"
-                />
-              </div>
-            </div>
-          </div>
-
-            {/* Bottom Decorative Line */}
-            <div className="absolute bottom-0 left-0 w-full h-[1px] bg-white/5">
-              <div className="absolute top-0 left-1/4 w-1/2 h-full bg-gradient-to-r from-transparent via-purple-400/40 to-transparent"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-purple-400 rounded-full"></div>
             </div>
           </div>
 
           {/* Project Overview */}
           <div className="mb-16">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-6">Project Overview</h3>
-            <p className="text-gray-400 leading-relaxed text-lg font-medium tracking-tight whitespace-pre-wrap">
+            <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-6">Project Overview</h3>
+            <p className="text-white leading-relaxed text-lg font-medium tracking-tight whitespace-pre-wrap">
               {project.description}
             </p>
           </div>
@@ -244,7 +240,7 @@ const ProjectDetail: React.FC = () => {
           {/* Project Goals */}
           {project.goals && project.goals.length > 0 && (
             <div className="mb-16">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400 mb-6">Project Goals</h3>
+              <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-purple-400 mb-6">Project Goals</h3>
               <div className="space-y-4">
                 {project.goals.map((goal, i) => (
                   <div key={i} className="flex items-start gap-4 text-gray-300 text-sm font-bold group">
@@ -259,7 +255,7 @@ const ProjectDetail: React.FC = () => {
           {/* Design Stack */}
           {project.techStack && project.techStack.length > 0 && (
             <div className="mb-16">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-6">Design Stack</h3>
+              <h3 className="text-[12px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-6">Design Stack</h3>
               <div className="flex flex-wrap gap-4">
                 {project.techStack.map((tech, i) => (
                   <div 

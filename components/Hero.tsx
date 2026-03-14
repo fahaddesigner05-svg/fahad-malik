@@ -28,7 +28,7 @@ const Hero: React.FC = () => {
         {/* Left Side: Content */}
         <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
           <div>
-            <h2 className="text-2xl font-light text-gray-300 mb-2">Hi, I'm</h2>
+            <h2 className="text-2xl font-light text-white mb-2">Hi, I'm</h2>
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none mb-6 whitespace-nowrap">
               <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
                 Fahad Malik
@@ -36,7 +36,6 @@ const Hero: React.FC = () => {
             </h1>
             <motion.p 
               animate={{ 
-                opacity: [0.6, 1, 0.6],
                 filter: ["brightness(1)", "brightness(1.2)", "brightness(1)"]
               }}
               transition={{ 
@@ -44,9 +43,9 @@ const Hero: React.FC = () => {
                 repeat: Infinity, 
                 ease: "easeInOut" 
               }}
-              className="text-xl md:text-2xl text-gray-400 font-medium tracking-wide"
+              className="text-xl md:text-2xl text-white font-medium tracking-wide"
             >
-              Graphic & UI/UX Designer
+              Graphic & UI UX Designer
             </motion.p>
           </div>
 

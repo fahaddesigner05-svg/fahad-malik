@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
       <div className="container mx-auto px-6 flex justify-between items-center">
         <div className="flex items-center space-x-2 cursor-pointer group" onClick={() => scrollTo('home')}>
           <div className="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-purple-600 rounded-xl flex items-center justify-center font-black text-xl group-hover:rotate-12 transition-transform shadow-lg shadow-cyan-500/30">F</div>
-          <span className="text-xl font-black tracking-tighter">FAHAD<span className="text-cyan-400">.</span></span>
+          <span className="text-xl font-black tracking-tighter">FAHAD</span>
         </div>
 
         <div className="hidden md:flex items-center space-x-10">

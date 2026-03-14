@@ -68,7 +68,7 @@ const About: React.FC = () => {
         if (!ctx) return;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(34, 211, 238, 0.6)';
+        ctx.fillStyle = 'rgba(34, 211, 238, 0.8)';
         ctx.fill();
       }
     }
@@ -95,7 +95,7 @@ const About: React.FC = () => {
 
           if (distance < 120) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(34, 211, 238, ${0.15 - distance / 800})`;
+            ctx.strokeStyle = `rgba(34, 211, 238, ${0.25 - distance / 800})`;
             ctx.lineWidth = 0.5;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -128,9 +128,9 @@ const About: React.FC = () => {
   }, []);
 
   const stats = [
-    { label: "Years Experience", value: "2+", color: "text-cyan-400", glow: "shadow-cyan-500/20", hoverColor: "group-hover/stat:text-purple-400" },
-    { label: "Projects Completed", value: "120+", color: "text-purple-400", glow: "shadow-purple-500/20", hoverColor: "group-hover/stat:text-cyan-400" },
-    { label: "Global Clients", value: "50+", color: "text-cyan-400", glow: "shadow-cyan-500/20", hoverColor: "group-hover/stat:text-purple-400" }
+    { label: "Years Experience", value: "2+", color: "text-cyan-400", glow: "shadow-cyan-500/20", hoverColor: "group-hover/stat:text-black", hoverBg: "hover:bg-cyan-400", hoverLabelColor: "group-hover/stat:text-black" },
+    { label: "Projects Completed", value: "120+", color: "text-purple-400", glow: "shadow-purple-500/20", hoverColor: "group-hover/stat:text-white", hoverBg: "hover:bg-purple-500", hoverLabelColor: "group-hover/stat:text-white" },
+    { label: "Global Clients", value: "50+", color: "text-cyan-400", glow: "shadow-cyan-500/20", hoverColor: "group-hover/stat:text-black", hoverBg: "hover:bg-cyan-400", hoverLabelColor: "group-hover/stat:text-black" }
   ];
 
   return (
@@ -138,7 +138,7 @@ const About: React.FC = () => {
       {/* Particles Network Background */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-60"
+        className="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-80"
       />
 
       <div className="container mx-auto px-6 py-4 relative z-10">
@@ -155,15 +155,15 @@ const About: React.FC = () => {
             </h2>
           </div>
 
-          <p className="text-gray-400 text-lg leading-relaxed max-w-xl">
-            I am Fahad Malik, a multidisciplinary designer specializing in high-end UI/UX and visual identities. My approach blends artistic intuition with data-driven strategy to create interfaces that aren't just seen—they are felt.
+          <p className="text-white text-lg leading-relaxed max-w-xl">
+            I am Fahad Malik, a multidisciplinary designer specializing in high end UI UX and visual identities. My approach blends artistic intuition with data driven strategy to create interfaces that aren't just seen they are felt.
           </p>
 
           <div className="grid grid-cols-3 gap-6 pt-6">
             {stats.map((stat, i) => (
-              <div key={i} className={`p-4 glass-panel rounded-2xl border border-white/5 shadow-lg ${stat.glow} transition-all duration-500 cursor-pointer group/stat overflow-hidden relative hover:-translate-y-1 hover:border-white/20 hover:bg-white/5`}>
+              <div key={i} className={`p-4 glass-panel rounded-2xl border border-white/5 shadow-lg ${stat.glow} transition-all duration-500 cursor-pointer group/stat overflow-hidden relative hover:-translate-y-1 hover:border-white/20 ${stat.hoverBg}`}>
                 <div className={`text-2xl md:text-3xl font-black mb-1 ${stat.color} ${stat.hoverColor} group-hover/stat:scale-110 transition-all duration-500 origin-left relative z-10`}>{stat.value}</div>
-                <div className="text-[10px] uppercase font-bold text-gray-500 tracking-wider leading-tight group-hover/stat:text-white transition-colors duration-500 relative z-10">{stat.label}</div>
+                <div className={`text-[10px] uppercase font-bold text-gray-500 tracking-wider leading-tight ${stat.hoverLabelColor} transition-colors duration-500 relative z-10`}>{stat.label}</div>
               </div>
             ))}
           </div>

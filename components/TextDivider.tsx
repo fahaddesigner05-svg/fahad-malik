@@ -13,8 +13,11 @@ const TextDivider: React.FC = () => {
         <div className="animate-marquee flex items-center">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center group/item">
-              <span className={`text-7xl md:text-[12rem] font-black tracking-tighter uppercase px-12 text-transparent transition-all duration-500 hover:scale-105 pointer-events-auto ${i % 2 === 0 ? 'hover:color-purple' : 'hover:color-cyan'}`}
-                    style={{ WebkitTextStroke: '2px rgba(255,255,255,0.1)' }}>
+              <span className={`text-7xl md:text-[12rem] font-bold uppercase px-20 text-transparent transition-all duration-500 hover:scale-105 pointer-events-auto ${i % 2 === 0 ? 'hover:color-purple' : 'hover:color-cyan'}`}
+                    style={{ 
+                      WebkitTextStroke: '2px rgba(255,255,255,0.1)',
+                      fontFamily: "'Poppins', sans-serif"
+                    }}>
                 Fahad <span className="text-transparent transition-all duration-500" style={{ WebkitTextStroke: '2px #22d3ee' }}>Malik</span>
               </span>
               <div className="w-8 h-8 md:w-16 md:h-16 rounded-full border-4 border-purple-500/30 flex items-center justify-center animate-spin-slow group-hover/item:border-cyan-400 group-hover/item:scale-125 transition-all duration-500">
@@ -28,8 +31,11 @@ const TextDivider: React.FC = () => {
         <div className="animate-marquee flex items-center" aria-hidden="true">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center group/item">
-              <span className={`text-7xl md:text-[12rem] font-black tracking-tighter uppercase px-12 text-transparent transition-all duration-500 hover:scale-105 pointer-events-auto ${i % 2 === 0 ? 'hover:color-purple' : 'hover:color-cyan'}`}
-                    style={{ WebkitTextStroke: '2px rgba(255,255,255,0.1)' }}>
+              <span className={`text-7xl md:text-[12rem] font-bold uppercase px-20 text-transparent transition-all duration-500 hover:scale-105 pointer-events-auto ${i % 2 === 0 ? 'hover:color-purple' : 'hover:color-cyan'}`}
+                    style={{ 
+                      WebkitTextStroke: '2px rgba(255,255,255,0.1)',
+                      fontFamily: "'Poppins', sans-serif"
+                    }}>
                 Fahad <span className="text-transparent transition-all duration-500" style={{ WebkitTextStroke: '2px #22d3ee' }}>Malik</span>
               </span>
               <div className="w-8 h-8 md:w-16 md:h-16 rounded-full border-4 border-purple-500/30 flex items-center justify-center animate-spin-slow group-hover/item:border-cyan-400 group-hover/item:scale-125 transition-all duration-500">

@@ -15,6 +15,7 @@ import Login from './components/Admin/Login';
 import Dashboard from './components/Admin/Dashboard';
 import ProjectDetail from './components/ProjectDetail';
 import AllProjects from './components/AllProjects';
+import LoadingScreen from './components/LoadingScreen';
 
 const SectionWrapper = ({ children, id, className = "" }: { children: React.ReactNode, id: string, className?: string }) => (
   <motion.section 
@@ -97,6 +98,7 @@ const MainSite: React.FC = () => {
 const App: React.FC = () => {
   return (
     <>
+      <LoadingScreen />
       <MouseRing />
       <Routes>
         <Route path="/" element={<MainSite />} />
