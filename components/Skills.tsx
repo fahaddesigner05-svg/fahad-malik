@@ -100,14 +100,6 @@ const Skills: React.FC = () => {
     
     const finalService = formData.service === 'Custom' ? formData.customService : formData.service;
     const finalBudget = formData.budget === 'Custom' ? formData.customBudget : formData.budget;
-    
-    const finalMessage = `
-Service Requested: ${finalService} (${selectedSkill?.name})
-Budget: ${finalBudget}
-
-Message:
-${formData.message}
-    `.trim();
 
     try {
       const response = await fetch('/api/contact', {
@@ -118,7 +110,9 @@ ${formData.message}
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          message: finalMessage,
+          message: formData.message,
+          service: `${finalService} (${selectedSkill?.name})`,
+          budget: finalBudget
         }),
       });
 
@@ -146,15 +140,15 @@ ${formData.message}
         {SKILLS.map((skill, idx) => (
           <div 
             key={idx} 
-            className={`glass-panel p-8 rounded-2xl border-2 border-white/5 ${skill.color.replace('text', 'hover:border')} transition-all duration-500 hover:-translate-y-2 group relative overflow-hidden`}
+            onClick={() => setSelectedSkill(skill)}
+            className={`glass-panel p-8 rounded-2xl border-2 border-white/5 ${skill.color.replace('text', 'hover:border')} transition-all duration-500 hover:-translate-y-2 group relative overflow-hidden cursor-pointer`}
           >
             {/* Subtle Background Glow */}
             <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[80px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${skill.color.replace('text', 'bg')}`}></div>
             
             <div className="flex items-center justify-between mb-6 relative z-10">
               <div 
-                onClick={() => setSelectedSkill(skill)}
-                className={`w-12 h-12 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-white/10 flex items-center justify-center ${skill.color} group-hover:scale-110 transition-transform duration-500 cursor-pointer hover:bg-white/5`}
+                className={`w-12 h-12 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-white/10 flex items-center justify-center ${skill.color} group-hover:scale-110 transition-transform duration-500 hover:bg-white/5`}
               >
                 <i className={`fas ${skill.icon} text-xl`}></i>
               </div>
@@ -192,9 +186,28 @@ ${formData.message}
           onClick={() => setSelectedSkill(null)}
         >
           <div 
-            className={`bg-[#0b0c10] border-2 ${selectedSkill.color.replace('text', 'border')} p-6 md:p-8 rounded-3xl max-w-3xl w-full relative shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar`}
+            className={`bg-[#0b0c10] border-2 ${selectedSkill.color.replace('text', 'border')} p-6 md:p-8 rounded-3xl max-w-3xl w-full relative shadow-2xl max-h-[90vh] overflow-y-auto modal-scrollbar`}
             onClick={(e) => e.stopPropagation()}
           >
+            <style>{`
+              .modal-scrollbar::-webkit-scrollbar {
+                width: 6px;
+              }
+              .modal-scrollbar::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.02);
+                border-radius: 8px;
+                margin-top: 32px;
+                margin-bottom: 32px;
+              }
+              .modal-scrollbar::-webkit-scrollbar-thumb {
+                background-color: ${
+                  selectedSkill.color === 'text-cyan-400' ? '#22d3ee' : 
+                  selectedSkill.color === 'text-purple-400' ? '#c084fc' : 
+                  selectedSkill.color === 'text-blue-400' ? '#60a5fa' : '#ffffff'
+                };
+                border-radius: 8px;
+              }
+            `}</style>
             <button 
               onClick={() => setSelectedSkill(null)}
               className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors z-10 bg-[#0b0c10] rounded-full p-1"
@@ -241,6 +254,51 @@ ${formData.message}
                         </span>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10 relative overflow-hidden group">
+                    <div className={`absolute top-0 left-0 w-1 h-full ${selectedSkill.color.replace('text-', 'bg-')}`}></div>
+                    <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[50px] opacity-20 transition-opacity duration-500 group-hover:opacity-40 ${selectedSkill.color.replace('text-', 'bg-')}`}></div>
+                    
+                    <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                      <i className="fas fa-bolt text-yellow-400"></i>
+                      Why Choose Me?
+                    </h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start gap-3 text-sm text-gray-400">
+                        <i className={`fas fa-check-circle mt-1 ${selectedSkill.color}`}></i>
+                        <span>100% Client Satisfaction & Revisions</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-sm text-gray-400">
+                        <i className={`fas fa-check-circle mt-1 ${selectedSkill.color}`}></i>
+                        <span>Modern, Clean & User-Centric Design</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-sm text-gray-400">
+                        <i className={`fas fa-check-circle mt-1 ${selectedSkill.color}`}></i>
+                        <span>Fast Delivery & Clear Communication</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center group hover:bg-white/10 transition-colors relative overflow-hidden">
+                      <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${selectedSkill.color.replace('text-', 'bg-')}`}></div>
+                      <h5 className={`text-3xl font-black ${selectedSkill.color}`}>50+</h5>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-1">Projects Done</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center group hover:bg-white/10 transition-colors relative overflow-hidden">
+                      <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${selectedSkill.color.replace('text-', 'bg-')}`}></div>
+                      <h5 className={`text-3xl font-black ${selectedSkill.color}`}>100%</h5>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-1">Success Rate</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-3 group hover:border-white/20 transition-colors cursor-default">
+                    <div className="relative flex h-3 w-3">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${selectedSkill.color.replace('text-', 'bg-')}`}></span>
+                      <span className={`relative inline-flex rounded-full h-3 w-3 ${selectedSkill.color.replace('text-', 'bg-')}`}></span>
+                    </div>
+                    <span className="text-sm font-bold text-white group-hover:text-gray-200 transition-colors">Available for new projects</span>
                   </div>
                 </div>
 

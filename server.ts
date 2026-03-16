@@ -122,13 +122,13 @@ app.delete('/api/projects', async (req, res) => {
 app.post('/api/contact', async (req, res) => {
   try {
     await dbConnect();
-    const { name, email, message } = req.body;
+    const { name, email, message, service, budget } = req.body;
     
     if (!name || !email || !message) {
       return res.status(400).json({ success: false, error: 'Please provide all fields.' });
     }
 
-    const newMessage = await Message.create({ name, email, message });
+    const newMessage = await Message.create({ name, email, message, service, budget });
     res.status(201).json({ success: true, data: newMessage });
   } catch (error: any) {
     console.error('API Error:', error);

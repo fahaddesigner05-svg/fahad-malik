@@ -4,6 +4,8 @@ export interface IMessage extends mongoose.Document {
   name: string;
   email: string;
   message: string;
+  service?: string;
+  budget?: string;
   createdAt: Date;
 }
 
@@ -20,6 +22,14 @@ const MessageSchema = new mongoose.Schema<IMessage>({
   message: {
     type: String,
     required: [true, 'Please provide a message.'],
+  },
+  service: {
+    type: String,
+    required: false,
+  },
+  budget: {
+    type: String,
+    required: false,
   },
 }, {
   timestamps: true,

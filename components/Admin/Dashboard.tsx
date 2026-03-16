@@ -76,6 +76,10 @@ const Dashboard: React.FC = () => {
   const [isUploadingProjectImage, setIsUploadingProjectImage] = useState(false);
   const [isUploadingProjectVideo, setIsUploadingProjectVideo] = useState(false);
   
+  // Message Modal State
+  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+  
   // Project Form State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<any>(null);
@@ -650,26 +654,34 @@ const Dashboard: React.FC = () => {
 
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, idx) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group"
-                  >
-                    <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} rounded-full blur-3xl -mr-12 -mt-12 opacity-50 group-hover:opacity-100 transition-opacity`}></div>
-                    <div className="relative z-10 flex items-center justify-between">
-                      <div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-                        <h3 className="text-3xl font-black">{stat.value}</h3>
+                {stats.map((stat, idx) => {
+                  let targetTab: 'dashboard' | 'projects' | 'messages' | 'settings' | 'portfolio-videos' | 'feedbacks' | null = null;
+                  if (stat.label === 'Feedbacks') targetTab = 'feedbacks';
+                  if (stat.label === 'Inquiries') targetTab = 'messages';
+                  if (stat.label === 'Active Projects') targetTab = 'projects';
+
+                  return (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      onClick={() => targetTab && setActiveTab(targetTab)}
+                      className={`glass-panel p-6 rounded-2xl border border-white/5 relative overflow-hidden group ${targetTab ? 'cursor-pointer hover:border-white/20' : ''}`}
+                    >
+                      <div className={`absolute top-0 right-0 w-24 h-24 ${stat.bg} rounded-full blur-3xl -mr-12 -mt-12 opacity-50 group-hover:opacity-100 transition-opacity`}></div>
+                      <div className="relative z-10 flex items-center justify-between">
+                        <div>
+                          <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{stat.label}</p>
+                          <h3 className="text-3xl font-black">{stat.value}</h3>
+                        </div>
+                        <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
+                          <stat.icon className="w-6 h-6" />
+                        </div>
                       </div>
-                      <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
-                        <stat.icon className="w-6 h-6" />
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Messages Preview */}
@@ -693,6 +705,8 @@ const Dashboard: React.FC = () => {
                     <thead>
                       <tr className="bg-white/5 text-gray-400 text-xs uppercase tracking-widest">
                         <th className="px-6 py-4">Name</th>
+                        <th className="px-6 py-4">Service</th>
+                        <th className="px-6 py-4">Budget</th>
                         <th className="px-6 py-4">Message</th>
                         <th className="px-6 py-4">Date</th>
                       </tr>
@@ -700,13 +714,26 @@ const Dashboard: React.FC = () => {
                     <tbody className="divide-y divide-white/5">
                       {loadingMessages ? (
                         <tr>
-                          <td colSpan={3} className="px-6 py-10 text-center text-gray-500 italic">Loading...</td>
+                          <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">Loading...</td>
                         </tr>
                       ) : messages.length > 0 ? (
                         messages.slice(0, 5).map((msg) => (
-                          <tr key={msg._id} className="hover:bg-white/5 transition-colors">
+                          <tr 
+                            key={msg._id} 
+                            className="hover:bg-white/5 transition-colors cursor-pointer"
+                            onClick={() => {
+                              setSelectedMessage(msg);
+                              setIsMessageModalOpen(true);
+                            }}
+                          >
                             <td className="px-6 py-4 font-medium">{msg.name}</td>
-                            <td className="px-6 py-4 text-gray-400 max-w-xs truncate">{msg.message}</td>
+                            <td className="px-6 py-4 text-gray-400">
+                              <div className="max-w-[150px] truncate" title={msg.service}>{msg.service || '-'}</div>
+                            </td>
+                            <td className="px-6 py-4 text-gray-400">{msg.budget || '-'}</td>
+                            <td className="px-6 py-4 text-gray-400">
+                              <div className="max-w-xs truncate" title={msg.message}>{msg.message}</div>
+                            </td>
                             <td className="px-6 py-4 text-gray-500 text-xs">
                               {new Date(msg.createdAt).toLocaleDateString()}
                             </td>
@@ -714,7 +741,7 @@ const Dashboard: React.FC = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={3} className="px-6 py-10 text-center text-gray-500 italic">No messages.</td>
+                          <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">No messages.</td>
                         </tr>
                       )}
                     </tbody>
@@ -842,6 +869,8 @@ const Dashboard: React.FC = () => {
                     <tr className="bg-white/5 text-gray-400 text-xs uppercase tracking-widest">
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4">Email</th>
+                      <th className="px-6 py-4">Service</th>
+                      <th className="px-6 py-4">Budget</th>
                       <th className="px-6 py-4">Message</th>
                       <th className="px-6 py-4">Date</th>
                       <th className="px-6 py-4 text-right">Actions</th>
@@ -850,20 +879,36 @@ const Dashboard: React.FC = () => {
                   <tbody className="divide-y divide-white/5">
                     {loadingMessages ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">Loading...</td>
+                        <td colSpan={7} className="px-6 py-10 text-center text-gray-500 italic">Loading...</td>
                       </tr>
                     ) : messages.length > 0 ? (
                       messages.map((msg) => (
-                        <tr key={msg._id} className="hover:bg-white/5 transition-colors group">
+                        <tr 
+                          key={msg._id} 
+                          className="hover:bg-white/5 transition-colors group cursor-pointer"
+                          onClick={() => {
+                            setSelectedMessage(msg);
+                            setIsMessageModalOpen(true);
+                          }}
+                        >
                           <td className="px-6 py-4 font-medium">{msg.name}</td>
                           <td className="px-6 py-4 text-gray-400">{msg.email}</td>
-                          <td className="px-6 py-4 text-gray-400">{msg.message}</td>
+                          <td className="px-6 py-4 text-gray-400">
+                            <div className="max-w-[150px] truncate" title={msg.service}>{msg.service || '-'}</div>
+                          </td>
+                          <td className="px-6 py-4 text-gray-400">{msg.budget || '-'}</td>
+                          <td className="px-6 py-4 text-gray-400">
+                            <div className="max-w-xs truncate" title={msg.message}>{msg.message}</div>
+                          </td>
                           <td className="px-6 py-4 text-gray-500 text-xs">
                             {new Date(msg.createdAt).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 text-right">
                             <button 
-                              onClick={() => deleteMessage(msg._id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteMessage(msg._id);
+                              }}
                               className="p-2 rounded-lg hover:bg-red-400/10 text-red-400 transition-all opacity-0 group-hover:opacity-100"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -873,7 +918,7 @@ const Dashboard: React.FC = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">No messages found.</td>
+                        <td colSpan={7} className="px-6 py-10 text-center text-gray-500 italic">No messages found.</td>
                       </tr>
                     )}
                   </tbody>
@@ -1405,6 +1450,85 @@ const Dashboard: React.FC = () => {
                 </button>
               </div>
             </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Message View Modal */}
+      {isMessageModalOpen && selectedMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#0b0c10] border border-white/10 rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl shadow-cyan-500/10"
+          >
+            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-cyan-400" />
+                Message Details
+              </h2>
+              <button 
+                onClick={() => setIsMessageModalOpen(false)}
+                className="p-2 rounded-full hover:bg-white/10 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+            
+            <div className="p-8 space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Name</p>
+                  <p className="text-lg font-medium text-white">{selectedMessage.name}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Email</p>
+                  <p className="text-lg font-medium text-white">
+                    <a href={`mailto:${selectedMessage.email}`} className="hover:text-cyan-400 transition-colors">
+                      {selectedMessage.email}
+                    </a>
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Service Requested</p>
+                  <p className="text-lg font-medium text-cyan-400">{selectedMessage.service || 'Not specified'}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Budget</p>
+                  <p className="text-lg font-medium text-purple-400">{selectedMessage.budget || 'Not specified'}</p>
+                </div>
+              </div>
+              
+              <div className="space-y-2 pt-4 border-t border-white/5">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 flex justify-between">
+                  <span>Message</span>
+                  <span>{new Date(selectedMessage.createdAt).toLocaleString()}</span>
+                </p>
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/5 text-gray-300 whitespace-pre-wrap leading-relaxed">
+                  {selectedMessage.message}
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-white/5 bg-black/20 flex justify-end gap-4">
+              <button 
+                onClick={() => {
+                  deleteMessage(selectedMessage._id);
+                  setIsMessageModalOpen(false);
+                }}
+                className="px-6 py-2.5 rounded-xl font-bold text-red-400 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20 flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete Message
+              </button>
+              <a 
+                href={`mailto:${selectedMessage.email}`}
+                className="px-6 py-2.5 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 flex items-center gap-2"
+              >
+                <i className="fas fa-reply"></i>
+                Reply via Email
+              </a>
+            </div>
           </motion.div>
         </div>
       )}
