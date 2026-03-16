@@ -8,6 +8,10 @@ const SettingsSchema = new mongoose.Schema({
   aboutVideoPlaceholder: {
     type: String,
     default: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800'
+  },
+  aboutPageImage: {
+    type: String,
+    default: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800'
   }
 }, { timestamps: true });
 

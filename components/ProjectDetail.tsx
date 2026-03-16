@@ -123,7 +123,7 @@ const ProjectDetail: React.FC = () => {
   }
 
   return (
-    <div className="fixed inset-0 bg-[#0b0c10] text-white selection:bg-cyan-500 selection:text-white z-[100] flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+    <div className="fixed inset-0 bg-[#0b0c10] text-white selection:bg-cyan-500 selection:text-white z-[100] flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden scrollbar-hide">
       {/* Global Background Mesh Gradient & Grain */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {/* Mesh Glows */}
@@ -190,10 +190,10 @@ const ProjectDetail: React.FC = () => {
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/10 blur-[80px] group-hover:bg-purple-500/20 transition-all duration-700"></div>
             
             {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/30 rounded-tl-xl transition-all duration-500 group-hover:w-12 group-hover:h-12 group-hover:border-cyan-400"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-purple-400/30 rounded-br-xl transition-all duration-500 group-hover:w-12 group-hover:h-12 group-hover:border-purple-400"></div>
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/30 rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:border-cyan-400"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-purple-400/30 rounded-br-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:border-purple-400"></div>
 
-            <div className="grid grid-cols-2 gap-8 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
               <div className="group/item cursor-default">
                 <div className="flex items-center gap-2 mb-4">
                   <User className="w-3 h-3 text-gray-500 group-hover/item:text-cyan-400 transition-colors duration-300" />
@@ -356,8 +356,8 @@ const ProjectDetail: React.FC = () => {
           ))}
 
           {/* THANKS FOR WATCHING - Single Horizontal Line */}
-          <div className="mt-auto py-20 flex items-center justify-center border-t border-white/5">
-            <p className="text-cyan-400 hover:text-purple-400 font-black uppercase tracking-[1.2em] text-[11px] whitespace-nowrap transition-colors duration-700 cursor-default">
+          <div className="mt-auto py-20 flex items-center justify-center border-t border-white/5 px-4">
+            <p className="text-cyan-400 hover:text-purple-400 font-black uppercase tracking-[0.4em] lg:tracking-[1.2em] text-[10px] lg:text-[11px] text-center transition-colors duration-700 cursor-default">
               THANKS FOR WATCHING
             </p>
           </div>

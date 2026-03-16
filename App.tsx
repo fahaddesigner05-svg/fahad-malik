@@ -34,12 +34,15 @@ const MainSite: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
-    // Increment view count
-    fetch('/api/analytics', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'views' }),
-    }).catch(err => console.error('Analytics error:', err));
+    // Increment view count only if not an admin
+    const isAdmin = localStorage.getItem('isAdminAuthenticated');
+    if (!isAdmin) {
+      fetch('/api/analytics', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'views' }),
+      }).catch(err => console.error('Analytics error:', err));
+    }
 
     const handleScroll = () => {
       const sections = ['home', 'about', 'projects', 'skills', 'contact'];

@@ -271,6 +271,16 @@ app.post('/api/analytics', async (req, res) => {
   }
 });
 
+app.delete('/api/analytics/reset', async (req, res) => {
+  try {
+    await dbConnect();
+    await Analytics.deleteMany({});
+    res.status(200).json({ success: true, message: 'Analytics reset successfully' });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 // Seed Route (Optional, for initial testing)
 app.post('/api/projects/seed', async (req, res) => {
   try {

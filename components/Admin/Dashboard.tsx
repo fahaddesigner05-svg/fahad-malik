@@ -66,10 +66,11 @@ const Dashboard: React.FC = () => {
   const [dbStatus, setDbStatus] = useState<{ connected: boolean; error?: string }>({ connected: true });
   const [adminData, setAdminData] = useState({ username: '', password: '' });
   const [isSavingAdmin, setIsSavingAdmin] = useState(false);
-  const [settings, setSettings] = useState({ aboutVideoLink: '', aboutVideoPlaceholder: '' });
+  const [settings, setSettings] = useState({ aboutVideoLink: '', aboutVideoPlaceholder: '', aboutPageImage: '' });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isUploadingAboutImage, setIsUploadingAboutImage] = useState(false);
   const [isUploadingProjectImage, setIsUploadingProjectImage] = useState(false);
   const [isUploadingProjectVideo, setIsUploadingProjectVideo] = useState(false);
   
@@ -213,6 +214,25 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleAboutImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
+    }
+    setIsUploadingAboutImage(true);
+    try {
+      const url = await uploadToCloudinary(file);
+      setSettings({ ...settings, aboutPageImage: url });
+      alert('About page image uploaded successfully! Click "Update Video Settings" to save changes.');
+    } catch (error: any) {
+      alert('Upload failed: ' + error.message);
+    } finally {
+      setIsUploadingAboutImage(false);
+    }
+  };
+
   const handleProjectImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -287,6 +307,20 @@ const Dashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
+    }
+  };
+
+  const resetAnalytics = async () => {
+    if (!confirm('Are you sure you want to reset all views and clicks to zero?')) return;
+    try {
+      const response = await fetch('/api/analytics/reset', { method: 'DELETE' });
+      const result = await response.json();
+      if (result.success) {
+        setAnalytics({ views: 0, clicks: 0 });
+        alert('Analytics reset successfully!');
+      }
+    } catch (error) {
+      console.error('Error resetting analytics:', error);
     }
   };
 
@@ -469,7 +503,7 @@ const Dashboard: React.FC = () => {
 
   const stats = [
     { label: 'Total Views', value: analytics.views.toLocaleString(), icon: Eye, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
-    { label: 'Project Clicks', value: analytics.clicks.toLocaleString(), icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+    { label: 'Creative Impact', value: analytics.clicks.toLocaleString(), icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-400/10' },
     { label: 'Inquiries', value: messages.length.toString(), icon: MessageSquare, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
     { label: 'Active Projects', value: projects.length.toString(), icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
   ];
@@ -573,13 +607,22 @@ const Dashboard: React.FC = () => {
 
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">Overview</h2>
-                <button 
-                  onClick={() => { fetchMessages(); fetchProjects(); fetchAnalytics(); checkDbStatus(); }}
-                  className="text-cyan-400 text-sm font-bold hover:underline flex items-center space-x-1"
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Refresh Stats</span>
-                </button>
+                <div className="flex space-x-4">
+                  <button 
+                    onClick={() => { fetchMessages(); fetchProjects(); fetchAnalytics(); checkDbStatus(); }}
+                    className="text-cyan-400 text-sm font-bold hover:underline flex items-center space-x-1"
+                  >
+                    <TrendingUp className="w-4 h-4" />
+                    <span>Refresh Stats</span>
+                  </button>
+                  <button 
+                    onClick={resetAnalytics}
+                    className="text-red-400 text-sm font-bold hover:underline flex items-center space-x-1"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Reset Views</span>
+                  </button>
+                </div>
               </div>
 
               {/* Stats Grid */}
@@ -892,6 +935,55 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="glass-panel p-8 rounded-3xl border border-white/5">
+                <h2 className="text-xl font-bold mb-6 flex items-center space-x-2">
+                  <Upload className="w-5 h-5 text-purple-400" />
+                  <span>About Page Image</span>
+                </h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Image URL</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. https://images.unsplash.com/..."
+                      value={settings.aboutPageImage} 
+                      onChange={(e) => setSettings({ ...settings, aboutPageImage: e.target.value })}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-cyan-400 outline-none transition-all" 
+                    />
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <label className="flex-1 px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 cursor-pointer hover:bg-white/10 transition-all flex items-center justify-center space-x-2">
+                      <Upload className="w-4 h-4" />
+                      <span>{isUploadingAboutImage ? 'Uploading...' : 'Upload New Image'}</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={handleAboutImageUpload}
+                        disabled={isUploadingAboutImage}
+                      />
+                    </label>
+                    <button 
+                      onClick={handleUpdateSettings}
+                      disabled={isSavingSettings}
+                      className="px-6 py-3 bg-purple-500 text-white font-bold rounded-xl hover:bg-purple-400 transition-all disabled:opacity-50"
+                    >
+                      {isSavingSettings ? 'Saving...' : 'Save Image'}
+                    </button>
+                  </div>
+                  {settings.aboutPageImage && (
+                    <div className="mt-4 aspect-video rounded-xl overflow-hidden border border-white/10">
+                      <img 
+                        src={settings.aboutPageImage} 
+                        alt="About Page Preview" 
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}

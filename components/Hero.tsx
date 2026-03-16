@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center px-6 lg:px-24 overflow-hidden pt-16 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed">
+    <div className="relative min-h-screen flex items-center px-6 lg:px-24 overflow-hidden pt-32 pb-24 lg:pt-16 lg:pb-0 bg-[url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed">
       {/* Dark Overlay for readability */}
       <div className="absolute inset-0 bg-slate-950/85 z-0"></div>
       
@@ -49,16 +49,16 @@ const Hero: React.FC = () => {
             </motion.p>
           </div>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button 
               onClick={() => scrollToSection('projects')}
-              className="px-8 py-4 bg-cyan-600/20 border-2 border-cyan-400 rounded-lg text-cyan-400 font-bold hover:bg-cyan-400 hover:text-black transition-all duration-300 transform hover:scale-105"
+              className="w-full sm:w-auto px-8 py-4 bg-cyan-600/20 border-2 border-cyan-400 rounded-lg text-cyan-400 font-bold hover:bg-cyan-400 hover:text-black transition-all duration-300 transform hover:scale-105"
             >
               View My Work
             </button>
             <button 
               onClick={() => scrollToSection('contact')}
-              className="px-8 py-4 bg-purple-600/20 border-2 border-purple-400 rounded-lg text-purple-400 font-bold hover:bg-purple-400 hover:text-white transition-all duration-300 transform hover:scale-105"
+              className="w-full sm:w-auto px-8 py-4 bg-purple-600/20 border-2 border-purple-400 rounded-lg text-purple-400 font-bold hover:bg-purple-400 hover:text-white transition-all duration-300 transform hover:scale-105"
             >
               Contact Me
             </button>

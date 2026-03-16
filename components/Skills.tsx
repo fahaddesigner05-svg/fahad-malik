@@ -79,7 +79,7 @@ const Skills: React.FC = () => {
         {SKILLS.map((skill, idx) => (
           <div 
             key={idx} 
-            className="glass-panel p-8 rounded-2xl border border-white/5 hover:border-white/20 transition-all duration-500 hover:-translate-y-2 group relative overflow-hidden"
+            className={`glass-panel p-8 rounded-2xl border-2 border-white/5 ${skill.color.replace('text', 'hover:border')} transition-all duration-500 hover:-translate-y-2 group relative overflow-hidden`}
           >
             {/* Subtle Background Glow */}
             <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[80px] opacity-0 group-hover:opacity-10 transition-opacity duration-500 ${skill.color.replace('text', 'bg')}`}></div>
@@ -125,7 +125,7 @@ const Skills: React.FC = () => {
           onClick={() => setSelectedSkill(null)}
         >
           <div 
-            className="bg-[#0b0c10] border border-white/10 p-8 rounded-3xl max-w-md w-full relative shadow-2xl"
+            className={`bg-[#0b0c10] border-2 ${selectedSkill.color.replace('text', 'border')} p-8 rounded-3xl max-w-md w-full relative shadow-2xl`}
             onClick={(e) => e.stopPropagation()}
           >
             <button 
@@ -147,7 +147,7 @@ const Skills: React.FC = () => {
                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-3">Sub-skills</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedSkill.details.subSkills.map((s, i) => (
-                    <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-gray-300">
+                    <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white">
                       {s}
                     </span>
                   ))}
@@ -158,7 +158,7 @@ const Skills: React.FC = () => {
                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-purple-400 mb-3">Tools</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedSkill.details.tools.map((t, i) => (
-                    <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-gray-300">
+                    <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-bold text-white">
                       {t}
                     </span>
                   ))}

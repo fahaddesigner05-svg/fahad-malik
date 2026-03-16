@@ -149,20 +149,20 @@ const About: React.FC = () => {
         {/* Left: Content */}
         <div className="space-y-8 order-1 lg:order-1">
           <div>
-            <h3 className="text-cyan-400 font-bold uppercase tracking-[0.3em] text-sm mb-2">Discovery</h3>
+            <h3 className="text-cyan-400 font-bold uppercase tracking-[0.3em] text-sm mb-2 text-left">Discovery</h3>
             <h2 className="text-4xl md:text-[3.5rem] font-extrabold leading-[1.1] tracking-tighter text-left max-w-xl">
               Designing the <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">Future</span> of Digital Experience
             </h2>
           </div>
 
-          <p className="text-white text-lg leading-relaxed max-w-xl">
+          <p className="text-white text-lg font-medium leading-relaxed max-w-xl text-left tracking-tight">
             I am Fahad Malik, a multidisciplinary designer specializing in high end UI UX and visual identities. My approach blends artistic intuition with data driven strategy to create interfaces that aren't just seen they are felt.
           </p>
 
-          <div className="grid grid-cols-3 gap-6 pt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-6">
             {stats.map((stat, i) => (
-              <div key={i} className={`p-4 glass-panel rounded-2xl border border-white/5 shadow-lg ${stat.glow} transition-all duration-500 cursor-pointer group/stat overflow-hidden relative hover:-translate-y-1 hover:border-white/20 ${stat.hoverBg}`}>
-                <div className={`text-2xl md:text-3xl font-black mb-1 ${stat.color} ${stat.hoverColor} group-hover/stat:scale-110 transition-all duration-500 origin-left relative z-10`}>{stat.value}</div>
+              <div key={i} className={`p-6 sm:p-4 glass-panel rounded-2xl border border-white/5 shadow-lg ${stat.glow} transition-all duration-500 cursor-pointer group/stat overflow-hidden relative hover:-translate-y-1 hover:border-white/20 ${stat.hoverBg} flex flex-col items-center sm:items-start text-center sm:text-left`}>
+                <div className={`text-3xl sm:text-2xl md:text-3xl font-black mb-1 ${stat.color} ${stat.hoverColor} group-hover/stat:scale-110 transition-all duration-500 origin-center sm:origin-left relative z-10`}>{stat.value}</div>
                 <div className={`text-[10px] uppercase font-bold text-gray-500 tracking-wider leading-tight ${stat.hoverLabelColor} transition-colors duration-500 relative z-10`}>{stat.label}</div>
               </div>
             ))}
@@ -237,14 +237,15 @@ const About: React.FC = () => {
 
         {/* Right: Visual Storytelling */}
         <div className="relative group order-2 lg:order-2 h-full">
-          <div className="relative z-10 glass-panel p-2 rounded-[2rem] border-white/10 overflow-hidden transform group-hover:rotate-1 transition-transform duration-500 h-full">
+          <div className="relative z-10 glass-panel p-2 rounded-[2rem] border-white/10 overflow-hidden transition-transform duration-500 h-full">
              <div className="h-full bg-slate-900 rounded-[1.8rem] overflow-hidden relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&q=80&w=800" 
-                  alt="Creative Workspace" 
-                  className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 transition-all duration-700"
+                  src={settings?.aboutPageImage || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"} 
+                  alt="Abstract Creative Visual" 
+                  className="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                  referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10]/40 via-transparent to-transparent"></div>
                 
                 {/* Floating Tech Stack Badges */}
                 <div className="absolute bottom-6 left-6 flex flex-wrap gap-2">
