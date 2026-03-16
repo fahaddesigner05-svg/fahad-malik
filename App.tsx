@@ -16,6 +16,8 @@ import Dashboard from './components/Admin/Dashboard';
 import ProjectDetail from './components/ProjectDetail';
 import AllProjects from './components/AllProjects';
 import LoadingScreen from './components/LoadingScreen';
+import Privacy from './components/Privacy';
+import Terms from './components/Terms';
 
 const SectionWrapper = ({ children, id, className = "" }: { children: React.ReactNode, id: string, className?: string }) => (
   <motion.section 
@@ -109,6 +111,8 @@ const App: React.FC = () => {
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/projects" element={<AllProjects />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
         {/* Redirect any other admin routes to login or dashboard */}
         <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
       </Routes>

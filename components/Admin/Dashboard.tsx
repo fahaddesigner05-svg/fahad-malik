@@ -873,13 +873,12 @@ const Dashboard: React.FC = () => {
                       <th className="px-6 py-4">Budget</th>
                       <th className="px-6 py-4">Message</th>
                       <th className="px-6 py-4">Date</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
                     {loadingMessages ? (
                       <tr>
-                        <td colSpan={7} className="px-6 py-10 text-center text-gray-500 italic">Loading...</td>
+                        <td colSpan={6} className="px-6 py-10 text-center text-gray-500 italic">Loading...</td>
                       </tr>
                     ) : messages.length > 0 ? (
                       messages.map((msg) => (
@@ -903,22 +902,11 @@ const Dashboard: React.FC = () => {
                           <td className="px-6 py-4 text-gray-500 text-xs">
                             {new Date(msg.createdAt).toLocaleDateString()}
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            <button 
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteMessage(msg._id);
-                              }}
-                              className="p-2 rounded-lg hover:bg-red-400/10 text-red-400 transition-all opacity-0 group-hover:opacity-100"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={7} className="px-6 py-10 text-center text-gray-500 italic">No messages found.</td>
+                        <td colSpan={6} className="px-6 py-10 text-center text-gray-500 italic">No messages found.</td>
                       </tr>
                     )}
                   </tbody>
