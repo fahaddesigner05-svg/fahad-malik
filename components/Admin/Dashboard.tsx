@@ -25,7 +25,8 @@ import {
   Layers,
   Code,
   Video,
-  Upload
+  Upload,
+  Star
 } from 'lucide-react';
 
 const getIcon = (name: string, type: string) => {
@@ -55,8 +56,9 @@ const getIcon = (name: string, type: string) => {
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'messages' | 'settings' | 'portfolio-videos'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'messages' | 'settings' | 'portfolio-videos' | 'feedbacks'>('dashboard');
   const [messages, setMessages] = useState<any[]>([]);
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState({ views: 0, clicks: 0 });
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -98,6 +100,7 @@ const Dashboard: React.FC = () => {
       navigate('/admin/login');
     } else {
       fetchMessages();
+      fetchFeedbacks();
       fetchProjects();
       fetchAnalytics();
       fetchAdminData();
@@ -141,9 +144,9 @@ const Dashboard: React.FC = () => {
       });
       const result = await response.json();
       if (result.success) {
-        alert('Settings updated successfully!');
+        // Success
       } else {
-        alert(result.error || 'Failed to update settings');
+        console.error(result.error || 'Failed to update settings');
       }
     } catch (error) {
       console.error('Error updating settings:', error);
@@ -180,16 +183,15 @@ const Dashboard: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('video/')) {
-      alert('Please select a valid video file.');
+      console.warn('Please select a valid video file.');
       return;
     }
     setIsUploadingVideo(true);
     try {
       const url = await uploadToCloudinary(file);
       setSettings({ ...settings, aboutVideoLink: url });
-      alert('Video uploaded successfully! Click "Update Video Settings" to save changes.');
     } catch (error: any) {
-      alert('Upload failed: ' + error.message);
+      console.error('Upload failed:', error.message);
     } finally {
       setIsUploadingVideo(false);
     }
@@ -199,16 +201,15 @@ const Dashboard: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file.');
+      console.warn('Please select a valid image file.');
       return;
     }
     setIsUploadingImage(true);
     try {
       const url = await uploadToCloudinary(file);
       setSettings({ ...settings, aboutVideoPlaceholder: url });
-      alert('Image uploaded successfully! Click "Update Video Settings" to save changes.');
     } catch (error: any) {
-      alert('Upload failed: ' + error.message);
+      console.error('Upload failed:', error.message);
     } finally {
       setIsUploadingImage(false);
     }
@@ -218,16 +219,15 @@ const Dashboard: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file.');
+      console.warn('Please select a valid image file.');
       return;
     }
     setIsUploadingAboutImage(true);
     try {
       const url = await uploadToCloudinary(file);
       setSettings({ ...settings, aboutPageImage: url });
-      alert('About page image uploaded successfully! Click "Update Video Settings" to save changes.');
     } catch (error: any) {
-      alert('Upload failed: ' + error.message);
+      console.error('Upload failed:', error.message);
     } finally {
       setIsUploadingAboutImage(false);
     }
@@ -237,7 +237,7 @@ const Dashboard: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file.');
+      console.warn('Please select a valid image file.');
       return;
     }
     setIsUploadingProjectImage(true);
@@ -250,7 +250,7 @@ const Dashboard: React.FC = () => {
         coverImg: prev.images.length === 0 ? url : prev.coverImg
       }));
     } catch (error: any) {
-      alert('Upload failed: ' + error.message);
+      console.error('Upload failed:', error.message);
     } finally {
       setIsUploadingProjectImage(false);
       e.target.value = '';
@@ -261,7 +261,7 @@ const Dashboard: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith('video/')) {
-      alert('Please select a valid video file.');
+      console.warn('Please select a valid video file.');
       return;
     }
     setIsUploadingProjectVideo(true);
@@ -269,7 +269,7 @@ const Dashboard: React.FC = () => {
       const url = await uploadToCloudinary(file);
       setFormData(prev => ({ ...prev, videoLink: url }));
     } catch (error: any) {
-      alert('Upload failed: ' + error.message);
+      console.error('Upload failed:', error.message);
     } finally {
       setIsUploadingProjectVideo(false);
       e.target.value = '';
@@ -286,11 +286,11 @@ const Dashboard: React.FC = () => {
         body: JSON.stringify(adminData)
       });
       const result = await response.json();
-      if (result.success) {
-        alert('Admin credentials updated successfully!');
-      } else {
-        alert(result.error || 'Failed to update admin credentials');
-      }
+    if (result.success) {
+      // Success
+    } else {
+      console.error(result.error || 'Failed to update admin credentials');
+    }
     } catch (error) {
       console.error('Error updating admin data:', error);
     } finally {
@@ -311,13 +311,11 @@ const Dashboard: React.FC = () => {
   };
 
   const resetAnalytics = async () => {
-    if (!confirm('Are you sure you want to reset all views and clicks to zero?')) return;
     try {
       const response = await fetch('/api/analytics/reset', { method: 'DELETE' });
       const result = await response.json();
       if (result.success) {
         setAnalytics({ views: 0, clicks: 0 });
-        alert('Analytics reset successfully!');
       }
     } catch (error) {
       console.error('Error resetting analytics:', error);
@@ -356,8 +354,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSeedData = async () => {
-    if (!confirm('This will clear all existing projects and add sample data. Continue?')) return;
-    
     setIsSeeding(true);
     setSeedStatus('loading');
     try {
@@ -367,14 +363,12 @@ const Dashboard: React.FC = () => {
         setSeedStatus('success');
         setTimeout(() => setSeedStatus('idle'), 3000);
         fetchProjects();
-        alert('Sample projects seeded successfully!');
       } else {
         throw new Error(result.error || 'Failed to seed data');
       }
     } catch (error: any) {
       console.error('Seed Error:', error);
       setSeedStatus('error');
-      alert(`Error: ${error.message}`);
     } finally {
       setIsSeeding(false);
     }
@@ -402,8 +396,19 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchFeedbacks = async () => {
+    try {
+      const response = await fetch('/api/feedback');
+      const result = await response.json();
+      if (result.success) {
+        setFeedbacks(result.data);
+      }
+    } catch (error) {
+      console.error('Error fetching feedbacks:', error);
+    }
+  };
+
   const deleteMessage = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this message?')) return;
     try {
       const response = await fetch(`/api/messages?id=${id}`, { method: 'DELETE' });
       const result = await response.json();
@@ -415,8 +420,19 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const deleteFeedback = async (id: string) => {
+    try {
+      const response = await fetch(`/api/feedback?id=${id}`, { method: 'DELETE' });
+      const result = await response.json();
+      if (result.success) {
+        setFeedbacks(feedbacks.filter(f => f._id !== id));
+      }
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+    }
+  };
+
   const deleteProject = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
     try {
       const response = await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
       const result = await response.json();
@@ -489,7 +505,7 @@ const Dashboard: React.FC = () => {
         fetchProjects();
         setIsModalOpen(false);
       } else {
-        alert(result.error || 'Failed to save project');
+        console.error(result.error || 'Failed to save project');
       }
     } catch (error) {
       console.error('Error saving project:', error);
@@ -503,7 +519,7 @@ const Dashboard: React.FC = () => {
 
   const stats = [
     { label: 'Total Views', value: analytics.views.toLocaleString(), icon: Eye, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
-    { label: 'Creative Impact', value: analytics.clicks.toLocaleString(), icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+    { label: 'Feedbacks', value: feedbacks.length.toString(), icon: Star, color: 'text-purple-400', bg: 'bg-purple-400/10' },
     { label: 'Inquiries', value: messages.length.toString(), icon: MessageSquare, color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
     { label: 'Active Projects', value: projects.length.toString(), icon: Briefcase, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
   ];
@@ -539,6 +555,13 @@ const Dashboard: React.FC = () => {
           >
             <MessageSquare className="w-5 h-5" />
             <span className="font-medium">Messages</span>
+          </button>
+          <button 
+            onClick={() => setActiveTab('feedbacks')}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'feedbacks' ? 'bg-cyan-600/10 text-cyan-400 border border-cyan-400/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+          >
+            <Star className="w-5 h-5" />
+            <span className="font-medium">Feedbacks</span>
           </button>
           <button 
             onClick={() => setActiveTab('portfolio-videos')}
@@ -851,6 +874,82 @@ const Dashboard: React.FC = () => {
                     ) : (
                       <tr>
                         <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">No messages found.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'feedbacks' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="glass-panel rounded-3xl border border-white/5 overflow-hidden"
+            >
+              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <h2 className="text-xl font-bold">Project Feedbacks</h2>
+                <button 
+                  onClick={fetchFeedbacks}
+                  className="text-cyan-400 text-sm font-bold hover:underline"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead>
+                    <tr className="bg-white/5 text-gray-400 text-xs uppercase tracking-widest">
+                      <th className="px-6 py-4">Project</th>
+                      <th className="px-6 py-4">Rating</th>
+                      <th className="px-6 py-4">User</th>
+                      <th className="px-6 py-4">Feedback</th>
+                      <th className="px-6 py-4">Date</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {feedbacks.length > 0 ? (
+                      feedbacks.map((fb) => {
+                        const project = projects.find(p => p._id === fb.projectId);
+                        return (
+                          <tr key={fb._id} className="hover:bg-white/5 transition-colors group">
+                            <td className="px-6 py-4 font-medium text-cyan-400">
+                              {project ? project.title : 'Unknown Project'}
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center space-x-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star 
+                                    key={star} 
+                                    className={`w-3 h-3 ${star <= fb.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'}`} 
+                                  />
+                                ))}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm">{fb.name}</div>
+                              <div className="text-xs text-gray-500">{fb.email}</div>
+                            </td>
+                            <td className="px-6 py-4 text-gray-400 text-sm max-w-xs truncate">{fb.message}</td>
+                            <td className="px-6 py-4 text-gray-500 text-xs">
+                              {new Date(fb.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <button 
+                                onClick={() => deleteFeedback(fb._id)}
+                                className="p-2 rounded-lg hover:bg-red-400/10 text-red-400 transition-all opacity-0 group-hover:opacity-100"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-10 text-center text-gray-500 italic">No feedbacks yet.</td>
                       </tr>
                     )}
                   </tbody>

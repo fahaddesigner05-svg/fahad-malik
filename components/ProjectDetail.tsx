@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, X, Globe, Code, Layers, Layout, User, Calendar } from 'lucide-react';
+import { ArrowLeft, X, Globe, Code, Layers, Layout, User, Calendar, Star, Send, MessageSquare } from 'lucide-react';
 import { SiFigma, SiCanva, SiSketch, SiInvision, SiFramer, SiReact, SiWordpress, SiElementor, SiWebflow, SiWix, SiShopify } from 'react-icons/si';
 import { DiPhotoshop, DiIllustrator } from 'react-icons/di';
 
@@ -30,6 +30,49 @@ const ProjectDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [feedbackData, setFeedbackData] = useState({ name: '', email: '', message: '' });
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowFeedbackPopup(true);
+    }, 6000); // 6 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rating) {
+      alert('Please select a rating');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: id,
+          ...feedbackData,
+          rating,
+          message: `[Feedback for ${project?.title}]: ${feedbackData.message}`
+        }),
+      });
+      if (response.ok) {
+        setFeedbackSubmitted(true);
+        setTimeout(() => setShowFeedbackPopup(false), 2000);
+      }
+    } catch (error) {
+      console.error('Feedback error:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (!scrollContainerRef.current || isHovering || loading || error || !project) return;
@@ -363,6 +406,126 @@ const ProjectDetail: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Feedback Popup */}
+      {showFeedbackPopup && (
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center px-4 py-6 bg-black/80 backdrop-blur-sm cursor-pointer"
+          onClick={() => setShowFeedbackPopup(false)}
+        >
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md glass-panel rounded-3xl border-white/10 overflow-hidden flex flex-col max-h-[90vh] cursor-default"
+          >
+            {/* Background Glow */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none z-0"></div>
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-500/20 blur-[80px] rounded-full pointer-events-none z-0"></div>
+
+            {/* Fixed Close Button */}
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowFeedbackPopup(false);
+              }}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all z-50 shadow-xl cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 lg:p-8 relative z-10">
+              <div className="w-12 h-12 lg:w-16 lg:h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-4 lg:mb-6">
+                <MessageSquare className="w-6 h-6 lg:w-8 lg:h-8 text-cyan-400" />
+              </div>
+
+              <h3 className="text-xl lg:text-2xl font-bold text-white mb-1 lg:mb-2">Share Your Feedback</h3>
+              <p className="text-gray-400 text-xs lg:text-sm mb-6 lg:mb-8">We'd love to hear your thoughts on this case study!</p>
+
+              {feedbackSubmitted ? (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="py-12 text-center"
+                >
+                  <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+                    <Star className="w-6 h-6 text-green-400 fill-green-400" />
+                  </div>
+                  <p className="text-white font-medium">Thank you for your feedback!</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Name</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={feedbackData.name}
+                      onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-cyan-400 outline-none transition-all text-sm text-white"
+                      placeholder="Your Name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Email</label>
+                    <input 
+                      type="email" 
+                      required
+                      value={feedbackData.email}
+                      onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-cyan-400 outline-none transition-all text-sm text-white"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Rating</label>
+                    <div className="flex items-center space-x-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          onMouseEnter={() => setHoverRating(star)}
+                          onMouseLeave={() => setHoverRating(0)}
+                          className="focus:outline-none transition-transform hover:scale-110"
+                        >
+                          <Star 
+                            className={`w-8 h-8 ${
+                              star <= (hoverRating || rating) 
+                                ? 'text-yellow-400 fill-yellow-400' 
+                                : 'text-gray-600'
+                            } transition-colors`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500">Review / Feedback</label>
+                    <textarea 
+                      required
+                      value={feedbackData.message}
+                      onChange={(e) => setFeedbackData({...feedbackData, message: e.target.value})}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-cyan-400 outline-none transition-all text-sm text-white min-h-[100px] resize-none"
+                      placeholder="What do you think about this project?"
+                    ></textarea>
+                  </div>
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-bold py-4 rounded-xl transition-all flex items-center justify-center space-x-2 group"
+                  >
+                    <span>{isSubmitting ? 'Sending...' : 'Submit Feedback'}</span>
+                    <Send className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </button>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -10,6 +10,7 @@ import Message from './models/Message';
 import Admin from './models/Admin';
 import Analytics from './models/Analytics';
 import Settings from './models/Settings';
+import Feedback from './models/Feedback';
 
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
@@ -131,6 +132,49 @@ app.post('/api/contact', async (req, res) => {
     res.status(201).json({ success: true, data: newMessage });
   } catch (error: any) {
     console.error('API Error:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Feedback API
+app.post('/api/feedback', async (req, res) => {
+  try {
+    await dbConnect();
+    const { projectId, name, email, message, rating } = req.body;
+    
+    if (!projectId || !name || !email || !message || !rating) {
+      return res.status(400).json({ success: false, error: 'Please provide all fields.' });
+    }
+
+    const newFeedback = await Feedback.create({ projectId, name, email, message, rating });
+    res.status(201).json({ success: true, data: newFeedback });
+  } catch (error: any) {
+    console.error('API Error:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.get('/api/feedback', async (req, res) => {
+  try {
+    await dbConnect();
+    const { projectId } = req.query;
+    const query = projectId ? { projectId } : {};
+    const feedbacks = await Feedback.find(query).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: feedbacks });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.delete('/api/feedback', async (req, res) => {
+  try {
+    await dbConnect();
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ success: false, error: 'Feedback ID is required' });
+    const feedback = await Feedback.findByIdAndDelete(id);
+    if (!feedback) return res.status(404).json({ success: false, error: 'Feedback not found' });
+    res.status(200).json({ success: true, data: feedback });
+  } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
   }
 });
@@ -274,7 +318,7 @@ app.post('/api/analytics', async (req, res) => {
 app.delete('/api/analytics/reset', async (req, res) => {
   try {
     await dbConnect();
-    await Analytics.deleteMany({});
+    await Analytics.updateMany({}, { $set: { count: 0 } });
     res.status(200).json({ success: true, message: 'Analytics reset successfully' });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
