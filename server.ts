@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import nodemailer from 'nodemailer';
 import dbConnect from './lib/mongodb';
 import Project from './models/Project';
 import Message from './models/Message';
@@ -209,8 +210,6 @@ app.delete('/api/messages', async (req, res) => {
 });
 
 // Admin API
-import nodemailer from 'nodemailer';
-
 const sendVerificationEmail = async (email: string, code: string) => {
   try {
     console.log(`Attempting to send verification email to: ${email}`);

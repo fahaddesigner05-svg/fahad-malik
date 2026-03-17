@@ -46,12 +46,19 @@ const Login: React.FC = () => {
     setForgotSuccess('');
     try {
       const response = await fetch('/api/admin/forgot-password', { method: 'POST' });
-      const result = await response.json();
-      if (result.success) {
-        setForgotSuccess('Verification code sent to your email (fahaddesigner05@gmail.com)');
-        setForgotStep('verify');
+      
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        if (result.success) {
+          setForgotSuccess('Verification code sent to your email (fahaddesigner05@gmail.com)');
+          setForgotStep('verify');
+        } else {
+          setForgotError(result.error || 'Failed to send code');
+        }
       } else {
-        setForgotError(result.error || 'Failed to send code');
+        const text = await response.text();
+        setForgotError(`Server Error: ${text.substring(0, 100)}`);
       }
     } catch (error: any) {
       setForgotError(error.message || 'An error occurred');
@@ -70,18 +77,25 @@ const Login: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: resetCode, newPassword })
       });
-      const result = await response.json();
-      if (result.success) {
-        setForgotSuccess('Password reset successfully! You can now login.');
-        setTimeout(() => {
-          setIsForgotModalOpen(false);
-          setForgotStep('request');
-          setResetCode('');
-          setNewPassword('');
-          setForgotSuccess('');
-        }, 2000);
+      
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const result = await response.json();
+        if (result.success) {
+          setForgotSuccess('Password reset successfully! You can now login.');
+          setTimeout(() => {
+            setIsForgotModalOpen(false);
+            setForgotStep('request');
+            setResetCode('');
+            setNewPassword('');
+            setForgotSuccess('');
+          }, 2000);
+        } else {
+          setForgotError(result.error || 'Invalid code or expired');
+        }
       } else {
-        setForgotError(result.error || 'Invalid code or expired');
+        const text = await response.text();
+        setForgotError(`Server Error: ${text.substring(0, 100)}`);
       }
     } catch (error: any) {
       setForgotError(error.message || 'An error occurred');
