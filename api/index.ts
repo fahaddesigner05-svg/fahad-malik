@@ -43,8 +43,11 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use('/uploads', express.static('uploads'));
 
+// Helper to handle API routes with or without /api prefix
+const apiRouter = express.Router();
+
 // Cloudinary Signing API
-app.get('/api/upload/sign', (req, res) => {
+apiRouter.get('/upload/sign', (req, res) => {
   try {
     const timestamp = Math.round((new Date()).getTime() / 1000);
     const signature = cloudinary.utils.api_sign_request(
@@ -69,18 +72,19 @@ app.get('/api/upload/sign', (req, res) => {
 });
 
 // Projects API
-app.get('/api/projects', async (req, res) => {
+apiRouter.get('/projects', async (req, res) => {
   try {
+    console.log("Fetching projects...");
     await dbConnect();
     const projects = await Project.find({}).sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: projects });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('Projects API Error:', error);
     res.status(400).json({ success: false, error: error.message });
   }
 });
 
-app.post('/api/projects', async (req, res) => {
+apiRouter.post('/projects', async (req, res) => {
   try {
     await dbConnect();
     const project = await Project.create(req.body);
@@ -90,7 +94,7 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-app.put('/api/projects', async (req, res) => {
+apiRouter.put('/projects', async (req, res) => {
   try {
     await dbConnect();
     const { id, ...updateData } = req.body;
@@ -103,7 +107,7 @@ app.put('/api/projects', async (req, res) => {
   }
 });
 
-app.delete('/api/projects', async (req, res) => {
+apiRouter.delete('/projects', async (req, res) => {
   try {
     await dbConnect();
     const { id } = req.query;
@@ -117,7 +121,7 @@ app.delete('/api/projects', async (req, res) => {
 });
 
 // Contact Form API
-app.post('/api/contact', async (req, res) => {
+apiRouter.post('/contact', async (req, res) => {
   try {
     await dbConnect();
     const { name, email, message, service, budget } = req.body;
@@ -129,13 +133,13 @@ app.post('/api/contact', async (req, res) => {
     const newMessage = await Message.create({ name, email, message, service, budget });
     res.status(201).json({ success: true, data: newMessage });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('Contact API Error:', error);
     res.status(400).json({ success: false, error: error.message });
   }
 });
 
 // Feedback API
-app.post('/api/feedback', async (req, res) => {
+apiRouter.post('/feedback', async (req, res) => {
   try {
     await dbConnect();
     const { projectId, name, email, message, rating } = req.body;
@@ -147,12 +151,12 @@ app.post('/api/feedback', async (req, res) => {
     const newFeedback = await Feedback.create({ projectId, name, email, message, rating });
     res.status(201).json({ success: true, data: newFeedback });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('Feedback API Error:', error);
     res.status(400).json({ success: false, error: error.message });
   }
 });
 
-app.get('/api/feedback', async (req, res) => {
+apiRouter.get('/feedback', async (req, res) => {
   try {
     await dbConnect();
     const { projectId } = req.query;
@@ -164,7 +168,7 @@ app.get('/api/feedback', async (req, res) => {
   }
 });
 
-app.delete('/api/feedback', async (req, res) => {
+apiRouter.delete('/feedback', async (req, res) => {
   try {
     await dbConnect();
     const { id } = req.query;
@@ -178,18 +182,18 @@ app.delete('/api/feedback', async (req, res) => {
 });
 
 // Messages API (for Admin)
-app.get('/api/messages', async (req, res) => {
+apiRouter.get('/messages', async (req, res) => {
   try {
     await dbConnect();
     const messages = await Message.find({}).sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: messages });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('Messages API Error:', error);
     res.status(400).json({ success: false, error: error.message });
   }
 });
 
-app.delete('/api/messages', async (req, res) => {
+apiRouter.delete('/messages', async (req, res) => {
   try {
     await dbConnect();
     const { id } = req.query;
@@ -247,7 +251,7 @@ const sendVerificationEmail = async (email: string, code: string) => {
   }
 };
 
-app.get('/api/admin', async (req, res) => {
+apiRouter.get('/admin', async (req, res) => {
   try {
     await dbConnect();
     let admin = await Admin.findOne({});
@@ -260,7 +264,7 @@ app.get('/api/admin', async (req, res) => {
   }
 });
 
-app.post('/api/admin', async (req, res) => {
+apiRouter.post('/admin', async (req, res) => {
   try {
     await dbConnect();
     const { username, password } = req.body;
@@ -278,7 +282,7 @@ app.post('/api/admin', async (req, res) => {
   }
 });
 
-app.put('/api/admin', async (req, res) => {
+apiRouter.put('/admin', async (req, res) => {
   try {
     await dbConnect();
     const { username, password, email } = req.body;
@@ -296,7 +300,7 @@ app.put('/api/admin', async (req, res) => {
   }
 });
 
-app.post('/api/admin/forgot-password', async (req, res) => {
+apiRouter.post('/admin/forgot-password', async (req, res) => {
   try {
     console.log("Forgot password request received");
     await dbConnect();
@@ -322,7 +326,7 @@ app.post('/api/admin/forgot-password', async (req, res) => {
   }
 });
 
-app.post('/api/admin/verify-code', async (req, res) => {
+apiRouter.post('/admin/verify-code', async (req, res) => {
   try {
     await dbConnect();
     const { code } = req.body;
@@ -346,7 +350,7 @@ app.post('/api/admin/verify-code', async (req, res) => {
   }
 });
 
-app.post('/api/admin/reset-password', async (req, res) => {
+apiRouter.post('/admin/reset-password', async (req, res) => {
   try {
     await dbConnect();
     const { code, newPassword } = req.body;
@@ -376,7 +380,7 @@ app.post('/api/admin/reset-password', async (req, res) => {
 });
 
 // Settings API
-app.get('/api/settings', async (req, res) => {
+apiRouter.get('/settings', async (req, res) => {
   try {
     await dbConnect();
     let settings = await Settings.findOne({});
@@ -389,7 +393,7 @@ app.get('/api/settings', async (req, res) => {
   }
 });
 
-app.put('/api/settings', async (req, res) => {
+apiRouter.put('/settings', async (req, res) => {
   try {
     await dbConnect();
     let settings = await Settings.findOne({});
@@ -405,7 +409,7 @@ app.put('/api/settings', async (req, res) => {
 });
 
 // Analytics API
-app.get('/api/analytics', async (req, res) => {
+apiRouter.get('/analytics', async (req, res) => {
   try {
     await dbConnect();
     const analytics = await Analytics.find({});
@@ -419,7 +423,7 @@ app.get('/api/analytics', async (req, res) => {
   }
 });
 
-app.post('/api/analytics', async (req, res) => {
+apiRouter.post('/analytics', async (req, res) => {
   try {
     await dbConnect();
     const { type } = req.body;
@@ -437,7 +441,7 @@ app.post('/api/analytics', async (req, res) => {
   }
 });
 
-app.delete('/api/analytics/reset', async (req, res) => {
+apiRouter.delete('/analytics/reset', async (req, res) => {
   try {
     await dbConnect();
     await Analytics.updateMany({}, { $set: { count: 0 } });
@@ -448,7 +452,7 @@ app.delete('/api/analytics/reset', async (req, res) => {
 });
 
 // Seed Route
-app.post('/api/projects/seed', async (req, res) => {
+apiRouter.post('/projects/seed', async (req, res) => {
   try {
     await dbConnect();
     const sampleProjects = [
@@ -494,6 +498,11 @@ app.post('/api/projects/seed', async (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 });
+
+// Mount the router on both /api and /
+// This handles cases where Vercel rewrites might strip the /api prefix or not
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
