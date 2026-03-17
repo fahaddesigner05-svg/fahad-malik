@@ -217,16 +217,15 @@ const sendVerificationEmail = async (email: string, code: string) => {
     // Here we use Ethereal for testing if no credentials are provided
     let transporter;
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-      console.log("Using provided SMTP credentials for Gmail");
+      console.log(`Using SMTP for: ${process.env.EMAIL_USER.split('@')[0]}...`);
       transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
         },
-        tls: {
-          rejectUnauthorized: false
-        }
       });
     } else {
       console.log("No SMTP credentials found, creating Ethereal test account...");
