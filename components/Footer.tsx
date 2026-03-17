@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div>
-            <div className="text-xl font-black tracking-tighter mb-2">FAHAD</div>
+            <div className="text-xl font-black tracking-tighter mb-2">FAHAD<span className="text-cyan-400">.</span></div>
             <p className="text-sm text-gray-500">Crafting digital experiences that matter.</p>
           </div>
           

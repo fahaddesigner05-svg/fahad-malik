@@ -4,16 +4,39 @@ import React, { useState } from 'react';
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
-    
-    // Simulate success without backend
-    setTimeout(() => {
-      setStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-    }, 1000);
+    setErrorMessage('');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const result = await response.json();
+        if (result.success) {
+          setStatus('success');
+          setFormData({ name: '', email: '', message: '' });
+        } else {
+          throw new Error(result.error || 'Something went wrong');
+        }
+      } else {
+        const text = await response.text();
+        console.error("Non-JSON response:", text);
+        throw new Error("Server returned an invalid response. Please check your Vercel deployment logs.");
+      }
+    } catch (err: any) {
+      console.error('Submit Error:', err);
+      setStatus('error');
+      setErrorMessage(err.message);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -36,7 +59,8 @@ const Contact: React.FC = () => {
                <div className="min-w-0">
                   <p className="text-xs text-gray-400 uppercase font-bold tracking-widest">Email Me</p>
                   <a href="mailto:fahaddesigner05@gmail.com" className="font-semibold text-white hover:text-cyan-400 transition-colors text-sm lg:text-base leading-tight">
-                    fahaddesigner05@gmail.com
+                    <span className="block lg:inline">fahaddesigner05</span>
+                    <span className="block lg:inline">@gmail.com</span>
                   </a>
                </div>
             </div>
@@ -66,8 +90,8 @@ const Contact: React.FC = () => {
                           social === 'linkedin' ? 'https://www.linkedin.com/in/fahad-malik-03b561368/' :
                           '#'
                         } 
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target={social === 'behance' || social === 'facebook' || social === 'instagram' || social === 'linkedin' ? '_blank' : undefined}
+                        rel={social === 'behance' || social === 'facebook' || social === 'instagram' || social === 'linkedin' ? 'noopener noreferrer' : undefined}
                         className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-cyan-600 transition-all"
                        >
                           <i className={`fab fa-${social}`}></i>
@@ -135,6 +159,10 @@ const Contact: React.FC = () => {
                   ></textarea>
               </div>
               
+              {status === 'error' && (
+                <p className="text-red-400 text-xs font-bold">{errorMessage}</p>
+              )}
+
               <button 
                 disabled={status === 'loading'}
                 className="w-full py-4 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-bold text-white hover:opacity-90 transition-opacity transform active:scale-95 shadow-lg shadow-cyan-500/20 disabled:opacity-50"
