@@ -17,6 +17,10 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 dotenv.config();
 
+if (!process.env.MONGODB_URI) {
+  console.error("CRITICAL ERROR: MONGODB_URI is not defined in environment variables.");
+}
+
 // Configure Cloudinary
 const cloudinaryConfig = {
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dmoboiirw',
@@ -209,10 +213,12 @@ import nodemailer from 'nodemailer';
 
 const sendVerificationEmail = async (email: string, code: string) => {
   try {
+    console.log(`Attempting to send verification email to: ${email}`);
     // For real usage, you should use your real SMTP credentials in .env
     // Here we use Ethereal for testing if no credentials are provided
     let transporter;
     if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      console.log("Using provided SMTP credentials");
       transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -221,6 +227,7 @@ const sendVerificationEmail = async (email: string, code: string) => {
         },
       });
     } else {
+      console.log("No SMTP credentials found, creating Ethereal test account...");
       const testAccount = await nodemailer.createTestAccount();
       transporter = nodemailer.createTransport({
         host: "smtp.ethereal.email",
@@ -234,7 +241,7 @@ const sendVerificationEmail = async (email: string, code: string) => {
     }
 
     const info = await transporter.sendMail({
-      from: '"Admin Panel" <admin@example.com>',
+      from: process.env.EMAIL_USER ? `"Admin Panel" <${process.env.EMAIL_USER}>` : '"Admin Panel" <admin@example.com>',
       to: email,
       subject: "Your Password Reset Code",
       text: `Your verification code is: ${code}`,
@@ -247,6 +254,7 @@ const sendVerificationEmail = async (email: string, code: string) => {
     }
   } catch (error) {
     console.error("Error sending email:", error);
+    throw new Error(`Email sending failed: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -301,9 +309,11 @@ app.put('/api/admin', async (req, res) => {
 
 app.post('/api/admin/forgot-password', async (req, res) => {
   try {
+    console.log("Forgot password request received");
     await dbConnect();
     let admin = await Admin.findOne({});
     if (!admin) {
+      console.log("No admin found, creating default admin");
       admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123', email: 'fahaddesigner05@gmail.com' });
     }
     
@@ -312,12 +322,14 @@ app.post('/api/admin/forgot-password', async (req, res) => {
     admin.resetCode = code;
     admin.resetCodeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
     await admin.save();
+    console.log(`Reset code generated for ${admin.email}`);
 
     await sendVerificationEmail(admin.email, code);
 
     res.status(200).json({ success: true, message: 'Verification code sent to email' });
   } catch (error: any) {
-    res.status(400).json({ success: false, error: error.message });
+    console.error("Forgot password error:", error);
+    res.status(500).json({ success: false, error: error.message || "Internal server error" });
   }
 });
 

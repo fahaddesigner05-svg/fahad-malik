@@ -53,8 +53,8 @@ const Login: React.FC = () => {
       } else {
         setForgotError(result.error || 'Failed to send code');
       }
-    } catch (error) {
-      setForgotError('An error occurred');
+    } catch (error: any) {
+      setForgotError(error.message || 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -83,8 +83,8 @@ const Login: React.FC = () => {
       } else {
         setForgotError(result.error || 'Invalid code or expired');
       }
-    } catch (error) {
-      setForgotError('An error occurred');
+    } catch (error: any) {
+      setForgotError(error.message || 'An error occurred');
     } finally {
       setIsLoading(false);
     }
