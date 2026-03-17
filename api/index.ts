@@ -1,17 +1,17 @@
 import express from 'express';
-import { createServer as createViteServer } from 'vite';
+console.log("API Index starting...");
 import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
-import dbConnect from '../lib/mongodb.js';
-import Project from '../models/Project.js';
-import Message from '../models/Message.js';
-import Admin from '../models/Admin.js';
-import Analytics from '../models/Analytics.js';
-import Settings from '../models/Settings.js';
-import Feedback from '../models/Feedback.js';
+import dbConnect from './lib/mongodb.js';
+import Project from './models/Project.js';
+import Message from './models/Message.js';
+import Admin from './models/Admin.js';
+import Analytics from './models/Analytics.js';
+import Settings from './models/Settings.js';
+import Feedback from './models/Feedback.js';
 
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -221,6 +221,9 @@ const sendVerificationEmail = async (email: string, code: string) => {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS,
         },
+        connectionTimeout: 10000, // 10 seconds
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
       });
     } else {
       console.log("No SMTP credentials found, creating Ethereal test account...");
@@ -516,6 +519,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
