@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { motion } from 'motion/react';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -11,10 +11,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import TextDivider from './components/TextDivider';
 import MouseRing from './components/MouseRing';
-import Login from './components/Admin/Login';
-import Dashboard from './components/Admin/Dashboard';
-import ProjectDetail from './components/ProjectDetail';
-import AllProjects from './components/AllProjects';
 import LoadingScreen from './components/LoadingScreen';
 import Privacy from './components/Privacy';
 import Terms from './components/Terms';
@@ -36,16 +32,6 @@ const MainSite: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
-    // Increment view count only if not an admin
-    const isAdmin = localStorage.getItem('isAdminAuthenticated');
-    if (!isAdmin) {
-      fetch('/api/analytics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'views' }),
-      }).catch(err => console.error('Analytics error:', err));
-    }
-
     const handleScroll = () => {
       const sections = ['home', 'about', 'projects', 'skills', 'contact'];
       const scrollPosition = window.scrollY + 100;
@@ -107,14 +93,8 @@ const App: React.FC = () => {
       <MouseRing />
       <Routes>
         <Route path="/" element={<MainSite />} />
-        <Route path="/admin/login" element={<Login />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/project/:id" element={<ProjectDetail />} />
-        <Route path="/projects" element={<AllProjects />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
-        {/* Redirect any other admin routes to login or dashboard */}
-        <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
       </Routes>
     </>
   );

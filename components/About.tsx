@@ -1,30 +1,8 @@
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const About: React.FC = () => {
-  const [settings, setSettings] = useState<any>(null);
-  const [showVideo, setShowVideo] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!showVideo || !videoContainerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!entries[0].isIntersecting) {
-          setShowVideo(false);
-        }
-      },
-      { threshold: 0 }
-    );
-
-    observer.observe(videoContainerRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [showVideo]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -116,17 +94,6 @@ const About: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    fetch('/api/settings')
-      .then(res => res.json())
-      .then(result => {
-        if (result.success) {
-          setSettings(result.data);
-        }
-      })
-      .catch(err => console.error('Error fetching settings:', err));
-  }, []);
-
   const stats = [
     { label: "Years Experience", value: "2+", color: "text-cyan-400", glow: "shadow-cyan-500/20", hoverColor: "group-hover/stat:text-black", hoverBg: "hover:bg-cyan-400", hoverLabelColor: "group-hover/stat:text-black" },
     { label: "Projects Completed", value: "120+", color: "text-purple-400", glow: "shadow-purple-500/20", hoverColor: "group-hover/stat:text-white", hoverBg: "hover:bg-purple-500", hoverLabelColor: "group-hover/stat:text-white" },
@@ -167,72 +134,6 @@ const About: React.FC = () => {
               </div>
             ))}
           </div>
-
-          <div className="pt-8 w-full" ref={videoContainerRef}>
-            <div 
-              className="aspect-video glass-panel rounded-2xl border border-white/10 overflow-hidden relative group shadow-2xl"
-            >
-              {!showVideo ? (
-                <div 
-                  onClick={() => settings?.aboutVideoLink && setShowVideo(true)}
-                  className="absolute inset-0 w-full h-full cursor-pointer z-20"
-                >
-                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center group-hover:bg-black/40 transition-all duration-500 z-20">
-                    <div className="w-16 h-16 rounded-full border-2 border-cyan-400 flex items-center justify-center bg-cyan-400/10 group-hover:bg-cyan-400 group-hover:scale-110 transition-all duration-500 shadow-[0_0_20px_rgba(34,211,238,0.3)] mb-2">
-                      <i className={`fas ${settings?.aboutVideoLink ? 'fa-play' : 'fa-video-slash'} text-cyan-400 group-hover:text-black text-xl ml-1`}></i>
-                    </div>
-                    <div className="text-gray-400 text-[10px] uppercase tracking-widest font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                      {settings?.aboutVideoLink ? 'Click to Play Video' : 'No Video Configured'}
-                    </div>
-                  </div>
-
-                  {/* Video Placeholder Content */}
-                  {settings?.aboutVideoPlaceholder ? (
-                    <img 
-                      src={settings.aboutVideoPlaceholder} 
-                      alt="Video Placeholder" 
-                      className="absolute inset-0 w-full h-full object-cover object-center z-10"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 w-full h-full bg-[#0b0c10] z-10"></div>
-                  )}
-                </div>
-              ) : (
-                <div className="absolute inset-0 w-full h-full z-30 bg-black">
-                  {settings?.aboutVideoLink && (settings.aboutVideoLink.includes('youtube.com') || settings.aboutVideoLink.includes('youtu.be')) ? (
-                    <iframe 
-                      src={`https://www.youtube.com/embed/${settings.aboutVideoLink.includes('v=') ? settings.aboutVideoLink.split('v=')[1].split('&')[0] : settings.aboutVideoLink.split('/').pop()}?autoplay=1`}
-                      className="w-full h-full"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  ) : settings?.aboutVideoLink ? (
-                    <video 
-                      src={settings.aboutVideoLink} 
-                      className="w-full h-full object-contain"
-                      controls
-                      autoPlay
-                      onError={(e) => {
-                        const video = e.target as HTMLVideoElement;
-                        video.style.display = 'none';
-                        const parent = video.parentElement;
-                        if (parent) {
-                          const placeholder = document.createElement('div');
-                          placeholder.className = "w-full h-full flex flex-col items-center justify-center bg-black text-gray-500 text-xs text-center p-8 space-y-4";
-                          placeholder.innerHTML = `
-                            <i class="fas fa-exclamation-triangle text-2xl text-amber-500"></i>
-                            <p>This video source is not supported or the link is invalid.<br/>Please use a direct .mp4 link or a YouTube URL.</p>
-                          `;
-                          parent.appendChild(placeholder);
-                        }
-                      }}
-                    />
-                  ) : null}
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Right: Visual Storytelling */}
@@ -240,7 +141,7 @@ const About: React.FC = () => {
           <div className="relative z-10 glass-panel p-2 rounded-[2rem] border-white/10 overflow-hidden transition-transform duration-500 h-full">
              <div className="h-full bg-slate-900 rounded-[1.8rem] overflow-hidden relative">
                 <img 
-                  src={settings?.aboutPageImage || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800"} 
+                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800" 
                   alt="Abstract Creative Visual" 
                   className="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
                   referrerPolicy="no-referrer"
