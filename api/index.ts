@@ -5,13 +5,13 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
-import dbConnect from '../lib/mongodb';
-import Project from '../models/Project';
-import Message from '../models/Message';
-import Admin from '../models/Admin';
-import Analytics from '../models/Analytics';
-import Settings from '../models/Settings';
-import Feedback from '../models/Feedback';
+import dbConnect from '../lib/mongodb.js';
+import Project from '../models/Project.js';
+import Message from '../models/Message.js';
+import Admin from '../models/Admin.js';
+import Analytics from '../models/Analytics.js';
+import Settings from '../models/Settings.js';
+import Feedback from '../models/Feedback.js';
 
 import { v2 as cloudinary } from 'cloudinary';
 
