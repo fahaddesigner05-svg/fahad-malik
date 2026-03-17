@@ -205,14 +205,59 @@ app.delete('/api/messages', async (req, res) => {
 });
 
 // Admin API
+import nodemailer from 'nodemailer';
+
+const sendVerificationEmail = async (email: string, code: string) => {
+  try {
+    // For real usage, you should use your real SMTP credentials in .env
+    // Here we use Ethereal for testing if no credentials are provided
+    let transporter;
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+    } else {
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+    }
+
+    const info = await transporter.sendMail({
+      from: '"Admin Panel" <admin@example.com>',
+      to: email,
+      subject: "Your Password Reset Code",
+      text: `Your verification code is: ${code}`,
+      html: `<b>Your verification code is: ${code}</b>`,
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    if (!process.env.EMAIL_USER) {
+      console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    }
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
+};
+
 app.get('/api/admin', async (req, res) => {
   try {
     await dbConnect();
     let admin = await Admin.findOne({});
     if (!admin) {
-      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123' });
+      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123', email: 'fahaddesigner05@gmail.com' });
     }
-    res.status(200).json({ success: true, data: { username: admin.username, password: admin.password } });
+    res.status(200).json({ success: true, data: { username: admin.username, password: admin.password, email: admin.email } });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
   }
@@ -224,7 +269,7 @@ app.post('/api/admin', async (req, res) => {
     const { username, password } = req.body;
     let admin = await Admin.findOne({});
     if (!admin) {
-      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123' });
+      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123', email: 'fahaddesigner05@gmail.com' });
     }
     if (username === admin.username && password === admin.password) {
       res.status(200).json({ success: true });
@@ -239,15 +284,91 @@ app.post('/api/admin', async (req, res) => {
 app.put('/api/admin', async (req, res) => {
   try {
     await dbConnect();
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
     let admin = await Admin.findOne({});
     if (!admin) {
-      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123' });
+      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123', email: 'fahaddesigner05@gmail.com' });
     }
-    admin.username = username;
-    admin.password = password;
+    if (username) admin.username = username;
+    if (password) admin.password = password;
+    if (email) admin.email = email;
     await admin.save();
-    res.status(200).json({ success: true, data: { username: admin.username, password: admin.password } });
+    res.status(200).json({ success: true, data: { username: admin.username, password: admin.password, email: admin.email } });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/forgot-password', async (req, res) => {
+  try {
+    await dbConnect();
+    let admin = await Admin.findOne({});
+    if (!admin) {
+      admin = await Admin.create({ username: 'fahadmalik', password: 'fahadmalik123', email: 'fahaddesigner05@gmail.com' });
+    }
+    
+    // Generate 6 digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    admin.resetCode = code;
+    admin.resetCodeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    await admin.save();
+
+    await sendVerificationEmail(admin.email, code);
+
+    res.status(200).json({ success: true, message: 'Verification code sent to email' });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/verify-code', async (req, res) => {
+  try {
+    await dbConnect();
+    const { code } = req.body;
+    const admin = await Admin.findOne({});
+    
+    if (!admin || !admin.resetCode || !admin.resetCodeExpires) {
+      return res.status(400).json({ success: false, error: 'No reset request found' });
+    }
+
+    if (new Date() > admin.resetCodeExpires) {
+      return res.status(400).json({ success: false, error: 'Code expired' });
+    }
+
+    if (admin.resetCode !== code) {
+      return res.status(400).json({ success: false, error: 'Invalid code' });
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+app.post('/api/admin/reset-password', async (req, res) => {
+  try {
+    await dbConnect();
+    const { code, newPassword } = req.body;
+    const admin = await Admin.findOne({});
+    
+    if (!admin || !admin.resetCode || !admin.resetCodeExpires) {
+      return res.status(400).json({ success: false, error: 'No reset request found' });
+    }
+
+    if (new Date() > admin.resetCodeExpires) {
+      return res.status(400).json({ success: false, error: 'Code expired' });
+    }
+
+    if (admin.resetCode !== code) {
+      return res.status(400).json({ success: false, error: 'Invalid code' });
+    }
+
+    admin.password = newPassword;
+    admin.resetCode = undefined;
+    admin.resetCodeExpires = undefined;
+    await admin.save();
+
+    res.status(200).json({ success: true, message: 'Password reset successful' });
   } catch (error: any) {
     res.status(400).json({ success: false, error: error.message });
   }

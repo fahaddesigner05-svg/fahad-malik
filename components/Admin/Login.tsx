@@ -1,14 +1,23 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { Lock, User, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Lock, User, ArrowRight, Mail, KeyRound } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Forgot Password State
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [forgotStep, setForgotStep] = useState<'request' | 'verify'>('request');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +40,62 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleSendResetCode = async () => {
+    setIsLoading(true);
+    setForgotError('');
+    setForgotSuccess('');
+    try {
+      const response = await fetch('/api/admin/forgot-password', { method: 'POST' });
+      const result = await response.json();
+      if (result.success) {
+        setForgotSuccess('Verification code sent to your email (fahaddesigner05@gmail.com)');
+        setForgotStep('verify');
+      } else {
+        setForgotError(result.error || 'Failed to send code');
+      }
+    } catch (error) {
+      setForgotError('An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    setIsLoading(true);
+    setForgotError('');
+    setForgotSuccess('');
+    try {
+      const response = await fetch('/api/admin/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: resetCode, newPassword })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setForgotSuccess('Password reset successfully! You can now login.');
+        setTimeout(() => {
+          setIsForgotModalOpen(false);
+          setForgotStep('request');
+          setResetCode('');
+          setNewPassword('');
+          setForgotSuccess('');
+        }, 2000);
+      } else {
+        setForgotError(result.error || 'Invalid code or expired');
+      }
+    } catch (error) {
+      setForgotError('An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0b0c10] bg-cyber flex items-center justify-center px-4 admin-area">
+    <div className="min-h-screen bg-[#0b0c10] bg-cyber flex items-center justify-center px-4 admin-area relative">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
         <div className="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
           {/* Decorative glows */}
@@ -68,7 +127,16 @@ const Login: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Password</label>
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Password</label>
+                  <button 
+                    type="button"
+                    onClick={() => setIsForgotModalOpen(true)}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
                   <input 
@@ -112,6 +180,109 @@ const Login: React.FC = () => {
           </button>
         </div>
       </motion.div>
+
+      {/* Forgot Password Modal */}
+      <AnimatePresence>
+        {isForgotModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-[#111216] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500"></div>
+              
+              <h3 className="text-xl font-bold text-white mb-2">Reset Password</h3>
+              
+              {forgotStep === 'request' ? (
+                <>
+                  <p className="text-gray-400 text-sm mb-6">
+                    A verification code will be sent to your registered email address (fahaddesigner05@gmail.com).
+                  </p>
+                  
+                  {forgotError && <p className="text-red-400 text-xs mb-4">{forgotError}</p>}
+                  
+                  <div className="flex justify-end space-x-3">
+                    <button 
+                      onClick={() => setIsForgotModalOpen(false)}
+                      className="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={handleSendResetCode}
+                      disabled={isLoading}
+                      className="px-4 py-2 bg-cyan-600/20 text-cyan-400 border border-cyan-400/30 rounded-lg hover:bg-cyan-600/30 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>{isLoading ? 'Sending...' : 'Send Code'}</span>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-gray-400 text-sm mb-6">
+                    Enter the 6-digit code sent to your email and your new password.
+                  </p>
+
+                  <div className="space-y-4 mb-6">
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Verification Code</label>
+                      <div className="relative mt-1">
+                        <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                        <input 
+                          type="text" 
+                          value={resetCode}
+                          onChange={(e) => setResetCode(e.target.value)}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-cyan-400"
+                          placeholder="123456"
+                          maxLength={6}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                      <div className="relative mt-1">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
+                        <input 
+                          type="password" 
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:outline-none focus:border-purple-400"
+                          placeholder="Enter new password"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {forgotError && <p className="text-red-400 text-xs mb-4">{forgotError}</p>}
+                  {forgotSuccess && <p className="text-emerald-400 text-xs mb-4">{forgotSuccess}</p>}
+
+                  <div className="flex justify-end space-x-3">
+                    <button 
+                      onClick={() => {
+                        setIsForgotModalOpen(false);
+                        setForgotStep('request');
+                      }}
+                      className="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={handleResetPassword}
+                      disabled={isLoading || !resetCode || !newPassword}
+                      className="px-4 py-2 bg-cyan-600/20 text-cyan-400 border border-cyan-400/30 rounded-lg hover:bg-cyan-600/30 transition-colors disabled:opacity-50"
+                    >
+                      {isLoading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

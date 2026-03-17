@@ -233,8 +233,8 @@ const ProjectDetail: React.FC = () => {
             <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/10 blur-[80px] group-hover:bg-purple-500/20 transition-all duration-700"></div>
             
             {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-400/30 rounded-tl-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:border-cyan-400"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-purple-400/30 rounded-br-xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:border-purple-400"></div>
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-[3px] border-l-[3px] border-cyan-400/30 rounded-tl-2xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:border-cyan-400 group-hover:rounded-2xl"></div>
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] border-purple-400/30 rounded-br-2xl transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:border-purple-400 group-hover:rounded-2xl"></div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 relative z-10">
               <div className="group/item cursor-default">
