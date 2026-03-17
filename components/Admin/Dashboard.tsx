@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { SiFigma, SiCanva, SiSketch, SiInvision, SiFramer, SiReact, SiWordpress, SiElementor, SiWebflow, SiWix, SiShopify } from 'react-icons/si';
 import { DiPhotoshop, DiIllustrator } from 'react-icons/di';
 import { 
@@ -58,7 +58,6 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'projects' | 'messages' | 'settings' | 'portfolio-videos' | 'feedbacks'>('dashboard');
   const [messages, setMessages] = useState<any[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState({ views: 0, clicks: 0 });
@@ -67,13 +66,8 @@ const Dashboard: React.FC = () => {
   const [isSeeding, setIsSeeding] = useState(false);
   const [seedStatus, setSeedStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [dbStatus, setDbStatus] = useState<{ connected: boolean; error?: string }>({ connected: true });
-  const [adminData, setAdminData] = useState({ username: '', password: '', email: '' });
+  const [adminData, setAdminData] = useState({ username: '', password: '' });
   const [isSavingAdmin, setIsSavingAdmin] = useState(false);
-  const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
-  const [verifyCode, setVerifyCode] = useState('');
-  const [verifyError, setVerifyError] = useState('');
-  const [verifySuccess, setVerifySuccess] = useState('');
-  const [isSendingCode, setIsSendingCode] = useState(false);
   const [settings, setSettings] = useState({ aboutVideoLink: '', aboutVideoPlaceholder: '', aboutPageImage: '' });
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
@@ -119,42 +113,12 @@ const Dashboard: React.FC = () => {
     }
   }, [navigate]);
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      const storedReadMessages = localStorage.getItem('readMessages');
-      let readMessages = [];
-      
-      if (!storedReadMessages) {
-        // First time running this feature: assume all existing messages are already read
-        readMessages = messages.map(m => m._id);
-        localStorage.setItem('readMessages', JSON.stringify(readMessages));
-      } else {
-        readMessages = JSON.parse(storedReadMessages);
-      }
-
-      if (activeTab === 'messages') {
-        const newReadMessages = [...new Set([...readMessages, ...messages.map(m => m._id)])];
-        localStorage.setItem('readMessages', JSON.stringify(newReadMessages));
-        setUnreadCount(0);
-      } else {
-        const unread = messages.filter(m => !readMessages.includes(m._id)).length;
-        setUnreadCount(unread);
-      }
-    } else {
-      setUnreadCount(0);
-    }
-  }, [activeTab, messages]);
-
   const fetchAdminData = async () => {
     try {
       const response = await fetch('/api/admin');
       const result = await response.json();
       if (result.success) {
-        setAdminData({
-          username: result.data.username || '',
-          email: result.data.email || '',
-          password: '' // Don't populate password
-        });
+        setAdminData(result.data);
       }
     } catch (error) {
       console.error('Error fetching admin data:', error);
@@ -318,28 +282,6 @@ const Dashboard: React.FC = () => {
 
   const handleUpdateAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminData.password) {
-      setIsSendingCode(true);
-      try {
-        const response = await fetch('/api/admin/forgot-password', { method: 'POST' });
-        const result = await response.json();
-        if (result.success) {
-          setIsVerifyModalOpen(true);
-        } else {
-          alert(result.error || 'Failed to send verification code');
-        }
-      } catch (error) {
-        alert('An error occurred while sending the code');
-      } finally {
-        setIsSendingCode(false);
-      }
-      return;
-    }
-    
-    saveAdminData();
-  };
-
-  const saveAdminData = async () => {
     setIsSavingAdmin(true);
     try {
       const response = await fetch('/api/admin', {
@@ -348,51 +290,13 @@ const Dashboard: React.FC = () => {
         body: JSON.stringify(adminData)
       });
       const result = await response.json();
-      if (result.success) {
-        alert('Credentials updated successfully');
-        setAdminData({ ...adminData, password: '' });
-      } else {
-        console.error(result.error || 'Failed to update admin credentials');
-      }
+    if (result.success) {
+      // Success
+    } else {
+      console.error(result.error || 'Failed to update admin credentials');
+    }
     } catch (error) {
       console.error('Error updating admin data:', error);
-    } finally {
-      setIsSavingAdmin(false);
-    }
-  };
-
-  const handleVerifyAndSavePassword = async () => {
-    setIsSavingAdmin(true);
-    setVerifyError('');
-    setVerifySuccess('');
-    try {
-      const response = await fetch('/api/admin/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: verifyCode, newPassword: adminData.password })
-      });
-      const result = await response.json();
-      if (result.success) {
-        setVerifySuccess('Password updated successfully!');
-        
-        // Also update username/email if they were changed
-        await fetch('/api/admin', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: adminData.username, email: adminData.email })
-        });
-
-        setTimeout(() => {
-          setIsVerifyModalOpen(false);
-          setVerifyCode('');
-          setVerifySuccess('');
-          setAdminData({ ...adminData, password: '' });
-        }, 2000);
-      } else {
-        setVerifyError(result.error || 'Invalid code or expired');
-      }
-    } catch (error) {
-      setVerifyError('An error occurred');
     } finally {
       setIsSavingAdmin(false);
     }
@@ -651,17 +555,10 @@ const Dashboard: React.FC = () => {
           </button>
           <button 
             onClick={() => setActiveTab('messages')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${activeTab === 'messages' ? 'bg-cyan-600/10 text-cyan-400 border border-cyan-400/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${activeTab === 'messages' ? 'bg-cyan-600/10 text-cyan-400 border border-cyan-400/20' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
           >
-            <div className="flex items-center space-x-3">
-              <MessageSquare className="w-5 h-5" />
-              <span className="font-medium">Messages</span>
-            </div>
-            {unreadCount > 0 && (
-              <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                {unreadCount}
-              </span>
-            )}
+            <MessageSquare className="w-5 h-5" />
+            <span className="font-medium">Messages</span>
           </button>
           <button 
             onClick={() => setActiveTab('feedbacks')}
@@ -1245,31 +1142,21 @@ const Dashboard: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Admin Email</label>
-                    <input 
-                      type="email" 
-                      value={adminData.email} 
-                      onChange={(e) => setAdminData({ ...adminData, email: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-cyan-400 outline-none transition-all" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">New Admin Password (Optional)</label>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Admin Password</label>
                     <input 
                       type="password" 
                       value={adminData.password} 
                       onChange={(e) => setAdminData({ ...adminData, password: e.target.value })}
-                      placeholder="Leave blank to keep current password"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-cyan-400 outline-none transition-all" 
                     />
                   </div>
                   <div className="pt-2">
                     <button 
                       type="submit"
-                      disabled={isSavingAdmin || isSendingCode}
-                      className="px-6 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all disabled:opacity-50 flex items-center space-x-2"
+                      disabled={isSavingAdmin}
+                      className="px-6 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all disabled:opacity-50"
                     >
-                      <span>{isSavingAdmin ? 'Saving...' : isSendingCode ? 'Sending Code...' : 'Update Credentials'}</span>
+                      {isSavingAdmin ? 'Saving...' : 'Update Credentials'}
                     </button>
                   </div>
                 </form>
@@ -1633,61 +1520,6 @@ const Dashboard: React.FC = () => {
           </motion.div>
         </div>
       )}
-      {/* Verify Email Modal for Password Change */}
-      <AnimatePresence>
-        {isVerifyModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-[#111216] border border-white/10 rounded-2xl p-6 w-full max-w-md shadow-2xl relative overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500"></div>
-              
-              <h3 className="text-xl font-bold text-white mb-2">Verify Email</h3>
-              <p className="text-gray-400 text-sm mb-6">
-                A verification code has been sent to your email ({adminData.email || 'fahaddesigner05@gmail.com'}). Please enter it below to confirm your password change.
-              </p>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Verification Code</label>
-                  <div className="relative mt-1">
-                    <input 
-                      type="text" 
-                      value={verifyCode}
-                      onChange={(e) => setVerifyCode(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:border-cyan-400 text-center tracking-[0.5em] font-mono text-lg"
-                      placeholder="------"
-                      maxLength={6}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {verifyError && <p className="text-red-400 text-xs mb-4 text-center">{verifyError}</p>}
-              {verifySuccess && <p className="text-emerald-400 text-xs mb-4 text-center">{verifySuccess}</p>}
-
-              <div className="flex justify-end space-x-3">
-                <button 
-                  onClick={() => setIsVerifyModalOpen(false)}
-                  className="px-4 py-2 rounded-lg text-gray-400 hover:text-white transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleVerifyAndSavePassword}
-                  disabled={isSavingAdmin || !verifyCode}
-                  className="px-4 py-2 bg-cyan-600/20 text-cyan-400 border border-cyan-400/30 rounded-lg hover:bg-cyan-600/30 transition-colors disabled:opacity-50"
-                >
-                  {isSavingAdmin ? 'Verifying...' : 'Verify & Save'}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
