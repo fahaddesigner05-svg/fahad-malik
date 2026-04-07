@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 
 const About: React.FC = () => {
@@ -203,7 +202,7 @@ const About: React.FC = () => {
                     <iframe 
                       src={`https://www.youtube.com/embed/${settings.aboutVideoLink.includes('v=') ? settings.aboutVideoLink.split('v=')[1].split('&')[0] : settings.aboutVideoLink.split('/').pop()}?autoplay=1`}
                       className="w-full h-full"
-                      frameBorder="0"
+                      frameBorder={0}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     ></iframe>
